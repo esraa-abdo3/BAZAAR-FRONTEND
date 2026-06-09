@@ -17,9 +17,10 @@ export async function registerCustomer({ fullName, email, password }) {
 export async function login({ email, password }) {
   const res = await authAxios.post("/login", { email, password });
   // Save token if returned
-  if (res.data?.token) {
-    localStorage.setItem("token", res.data.token);
-  }
+if (res.data?.data?.accessToken) {
+  localStorage.setItem("token", res.data.data.accessToken);
+}
+  console.log(res)
   return res.data;
 }
 
@@ -45,6 +46,6 @@ export async function forgetPassword({ email }) {
 
 // Reset Password
 export async function resetPassword({ token, password }) {
-  const res = await authAxios.post(`/resetpassword/${token}`, { token, password });
+  const res = await authAxios.post(`/resetPassword`, { token, password });
   return res.data;
 }
