@@ -376,7 +376,6 @@ export default function BazaarOwnerDashboardPage() {
                       "Products",
                       "Orders",
                       "Revenue",
-                      "Actions",
                     ].map((h) => (
                       <th
                         key={h}
@@ -438,16 +437,7 @@ export default function BazaarOwnerDashboardPage() {
                               ${brand.totalRevenue.toLocaleString()}
                             </span>
                           </td>
-                          <td className="px-5 py-4">
-                            <div className="flex items-center gap-1">
-                              <button className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-indigo-600 transition-colors rounded-md hover:bg-indigo-50">
-                                <PenLine size={14} />
-                              </button>
-                              <button className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50">
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          </td>
+                    
                         </tr>
                       ))}
                 </tbody>
