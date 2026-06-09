@@ -1,33 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  TrendingUp,
-  TrendingDown,
-  PlusCircle,
-  PenLine,
-  Trash2,
-  ChevronRight,
-  ChevronLeft,
-  Loader2,
-} from "lucide-react";
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
+import {TrendingUp,TrendingDown,PlusCircle,PenLine,Trash2,ChevronRight,ChevronLeft,Loader2} from "lucide-react";
+import {LineChart,Line,BarChart,Bar,XAxis,YAxis,Tooltip,ResponsiveContainer,CartesianGrid,} from "recharts";
 import DashboardHeader from "../../components/Dashboard/BazarownerDashboard/DashboardHeader";
-import {
-  getDashboard,
-  getBrandComparison,
-  getSalesByHour,
-} from "../../services/dashboardhomeService";
+import {getDashboard,getBrandComparison,getSalesByHour} from "../../services/dashboardhomeService";
 
 
 const PERIOD_MAP = {
@@ -73,7 +50,6 @@ export default function BazaarOwnerDashboardPage() {
   const [timeFilter, setTimeFilter] = useState("Full Day");
   const [page, setPage] = useState(1);
   const LIMIT = 5;
-
   const [totals, setTotals] = useState(null);
   const [brands, setBrands] = useState([]);
   const [pagination, setPagination] = useState(null);
