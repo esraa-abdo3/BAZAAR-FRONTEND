@@ -29,8 +29,7 @@ import {
   getSalesByHour,
 } from "../../services/dashboardhomeService";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-// ── Helpers ───────────────────────────────────────────────────────────────────
+
 const PERIOD_MAP = {
   "Full Day": "full",
   Morning: "morning",
@@ -38,21 +37,20 @@ const PERIOD_MAP = {
   Evening: "evening",
 };
 
-/** Format hour number → "8 AM" / "2 PM" */
+
 function formatHour(h) {
   if (h === 0 || h === 24) return "12 AM";
   if (h === 12) return "12 PM";
   return h < 12 ? `${h} AM` : `${h - 12} PM`;
 }
 
-// ── Skeleton ──────────────────────────────────────────────────────────────────
+
 function Skeleton({ className = "" }) {
   return (
     <div className={`animate-pulse bg-gray-100 rounded-lg ${className}`} />
   );
 }
 
-// ── Custom Tooltip ────────────────────────────────────────────────────────────
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
@@ -69,9 +67,9 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default function BazaarOwnerDashboardPage() {
-  // ─ State ─
+
   const [timeFilter, setTimeFilter] = useState("Full Day");
   const [page, setPage] = useState(1);
   const LIMIT = 5;
@@ -188,7 +186,7 @@ export default function BazaarOwnerDashboardPage() {
           </div>
         )}
 
-        {/* ── Revenue Tracking ── */}
+        
         <section>
           <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-0.5">
             Revenue Tracking
@@ -237,9 +235,9 @@ export default function BazaarOwnerDashboardPage() {
                 ))}
           </div>
 
-          {/* Charts */}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Bar Chart */}
+            
             <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
               <p className="text-sm font-semibold text-gray-700 mb-4">
                 Brand Comparison (Bar)
@@ -287,7 +285,7 @@ export default function BazaarOwnerDashboardPage() {
               )}
             </div>
 
-            {/* Line Chart */}
+         
             <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <p className="text-sm font-semibold text-gray-700">
@@ -349,7 +347,7 @@ export default function BazaarOwnerDashboardPage() {
           </div>
         </section>
 
-        {/* ── Brand Management ── */}
+    
         <section>
           <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
             <div>
