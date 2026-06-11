@@ -16,13 +16,12 @@ export async function registerCustomer({ fullName, email, password }) {
 // Login
 export async function login({ email, password }) {
   const res = await authAxios.post("/login", { email, password });
-  // Save token if returned
-  if (res.data?.token) {
-    localStorage.setItem("token", res.data.token);
+  const token = res.data?.data?.accessToken;
+  if (token) {
+    localStorage.setItem("token", token);
   }
   return res.data;
 }
-
 // Logout
 export async function logout() {
   const token = localStorage.getItem("token");

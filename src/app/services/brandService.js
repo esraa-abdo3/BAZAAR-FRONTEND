@@ -96,3 +96,25 @@ export async function updateOrderStatus(id, status) {
   const res = await brandAxios.patch(`/brand/orders/${id}/status`, { status });
   return res.data;
 }
+
+// ── AI ────────────────────────────────────────────────────────────────────────
+// POST /brand/suggest-description
+export async function suggestBrandDescription(data) {
+  const res = await brandAxios.post("/brand/suggest-description", data);
+  return res.data;
+}
+
+// POST /brand/suggest-description?regenerate=true
+export async function resuggestBrandDescription(data) {
+  const res = await brandAxios.post(
+    "/brand/suggest-description?regenerate=true",
+    data,
+  );
+  return res.data;
+}
+
+// POST /assistant/:brandId/chat
+export async function sendAssistantMessage(brandId, message) {
+  const res = await brandAxios.post(`/assistant/${brandId}/chat`, { message });
+  return res.data;
+}

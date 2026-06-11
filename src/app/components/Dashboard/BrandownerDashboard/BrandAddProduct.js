@@ -65,9 +65,13 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
     try {
       setLoading(true);
       if (isEdit) {
-        await axios.put(`${BASE_URL}/products/${product._id}`, fd, { headers: getHeaders() });
+        await axios.patch(`${BASE_URL}/brand/products/${product._id}`, fd, {
+          headers: getHeaders(),
+        });
       } else {
-        await axios.post(`${BASE_URL}/products`, fd, { headers: getHeaders() });
+        await axios.post(`${BASE_URL}/brand/products`, fd, {
+          headers: getHeaders(),
+        });
       }
       onSuccess();
     } catch (err) {
