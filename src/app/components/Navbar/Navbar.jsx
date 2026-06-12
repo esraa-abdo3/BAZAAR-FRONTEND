@@ -17,49 +17,31 @@ export default function Navbar() {
         
        <div className="w-full py-3 shadow-lg shadow-primary/10">
             <div className="container w-[90%] m-auto flex justify-between items-center">
-                <div className="logo uppercase  font-medium text-[23px] text-background">
-                    Bazaarna
+                    <div className="logo uppercase  font-medium text-[23px] text-background cursor-pointer">
+                        <Link href={"/"}>
+                                 Bazaarna
+                        </Link>
+               
                 </div>
-                <div className="links hidden md:flex justify-center gap-4 items-center px-2 capitalize text-gray-400 font-medium">
-                    <Link href={"/"}
-                    
-                     className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                <div className="links hidden lg:flex justify-center gap-3 items-center px-1 capitalize text-gray-400 font-medium">
+                    <Link href={"/"}     
+                     className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary  after:transition-all after:duration-300  hover:after:w-full"
                     >Home</Link>
                     <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                                             className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     
                     >Live Bazaars</Link>
                     <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                                             className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >Upcoming Bazaars</Link>
         
                     <Link href={"/"}
                     
-                                         className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+ className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >About Us</Link>
                    
                     <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                    className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >contact us</Link>
               
                 </div>
