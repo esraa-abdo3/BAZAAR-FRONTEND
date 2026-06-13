@@ -21,9 +21,14 @@ if (res.data?.data?.accessToken) {
   localStorage.setItem("token", res.data.data.accessToken);
 }
   console.log(res)
-  return res.data;
-}
 
+  const token = res.data?.data?.accessToken;
+  if (token) {
+    localStorage.setItem("token", token);
+  }
+
+
+}
 // Logout
 export async function logout() {
   const token = localStorage.getItem("token");
