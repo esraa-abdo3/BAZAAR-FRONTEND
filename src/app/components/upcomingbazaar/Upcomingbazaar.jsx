@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Upcomingbazaar({ upcoming }) {
   const bazaars = upcoming?.data || [];
   const getDaysLeft = (startDate) => {
@@ -57,9 +59,12 @@ export default function Upcomingbazaar({ upcoming }) {
                   <span>{getDaysLeft(item.startDate)}</span>
                 </div>
                 {item.isAcceptingBrands && (
+                  <Link href={`/Brandcreation/${item._id}`}>
+                 
                       <button className="mt-4 w-full bg-[#50604a] text-white py-2 rounded-lg hover:scale-[.98] transition-all duration-300 cursor-pointer">
                   Join now
-                </button>
+                    </button>
+                     </Link>
                   
 )
 }

@@ -85,7 +85,7 @@ export default function Navbar() {
         <div
             className="
                 absolute
-                -top-[10px]
+                -top-[8px]
                 -right-3
                 w-5
                 h-5
