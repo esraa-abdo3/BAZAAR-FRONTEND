@@ -41,7 +41,7 @@ export default  async function Home() {
   const bazars = await getlivebazar();
   const upcomingbazaars = await getupcompingbazaar();
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans">
+    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans ">
       <HeroSection />
       <Livebazaar livebazars={bazars} />
       <Upcomingbazaar upcoming={upcomingbazaars} />

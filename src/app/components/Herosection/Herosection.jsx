@@ -1,6 +1,6 @@
 export default function HeroSection() {
   return (
-    <section className="relative w-[90%] m-auto my-2 h-screen min-h-[600px] overflow-hidden font-sans rounded-[8px]">
+    <section className="relative w-[90%] m-auto my-2 h-screen min-h-[600px] overflow-hidden font-sans rounded-[8px]  mt-20">
       <div className="absolute inset-0">
         <img
           src="/Hero Section.png"

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-
+import { FiShoppingCart } from "react-icons/fi";
+import { useCart } from "../../context/CartContext";
 export default function Navbar() {
     const [open, setsopen] = useState(false);
+    const { cartCount } = useCart();
     const openfun = () => {
         setsopen(true)
         
@@ -12,10 +14,13 @@ export default function Navbar() {
     const close = () => {
         setsopen(false)
     }
+   const token = typeof window !== "undefined"
+  ? localStorage.getItem("token")
+  : null;
     return (
         <>
         
-       <div className="w-full py-3 shadow-lg shadow-primary/10">
+<div className="fixed top-0 left-0 w-full z-50 bg-white py-3 shadow-lg shadow-primary/10 ">
             <div className="container w-[90%] m-auto flex justify-between items-center">
                     <div className="logo uppercase  font-medium text-[23px] text-background cursor-pointer">
                         <Link href={"/"}>
@@ -45,17 +50,49 @@ export default function Navbar() {
                     >contact us</Link>
               
                 </div>
-                <div className="auth hidden md:flex gap-4 capitalize ">
-                        <button className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500  cursor-pointer">
+                    <div className="auth hidden md:flex gap-4 capitalize ">
+                        {!token &&
+                                    <button className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500  cursor-pointer">
                             <Link href={"/auth/login"}>
                                    login
                             </Link>
                          
                         </button>
-                        <button className="rounded-[8px] px-4 py-1 bg-primary text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500 cursor-pointer" >
-                          
-                            <Link href={'/auth/signup'}>  sign up</Link>
-                        </button>
+                        }
+                
+ <Link
+    href="/cart"
+    className="relative flex items-center"
+                        >
+                            <div>
+    <FiShoppingCart
+        size={24}
+        className="text-background"
+    />
+                            </div>
+
+
+
+        <div
+            className="
+                absolute
+                -top-[10px]
+                -right-3
+                w-5
+                h-5
+                rounded-full
+                bg-primary
+                text-white
+                text-xs
+                flex
+                items-center
+                justify-center
+            "
+        >
+         <span> {cartCount}</span>  
+        </div>
+
+</Link>
                 </div>
                     
             <button
@@ -83,7 +120,7 @@ export default function Navbar() {
 
    
 <div
-  className={`fixed top-0 left-0 h-full w-[50%] bg-white shadow-2xl transition-all duration-300 ease-in-out z-50
+  className={`fixed top-0 left-0 w-full z-50 h-full  bg-white shadow-2xl transition-all duration-300 ease-in-out z-50
     ${open ? "translate-x-0" : "-translate-x-full"}`}
 >
       

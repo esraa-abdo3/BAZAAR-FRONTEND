@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-
+import { useCart } from "../../../../../../../context/CartContext";
 export default function ProductProfile() {
   const { id, brandid, productid } = useParams();
   const [brand, setBrand] = useState(null);
@@ -10,6 +10,8 @@ export default function ProductProfile() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [imgIndex, setImgIndex] = useState(0);
+  const { addToCart } = useCart();
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     async function fetchAll() {
@@ -40,7 +42,7 @@ export default function ProductProfile() {
   const maxQty = product?.quantity || 1;
 
   return (
-    <div className="w-[95%] lg:w-[85%] mx-auto px-4 py-6 pb-12">
+    <div className="w-[95%] lg:w-[85%] mx-auto px-4 py-6 pb-12 mt-15">
 
  
 
