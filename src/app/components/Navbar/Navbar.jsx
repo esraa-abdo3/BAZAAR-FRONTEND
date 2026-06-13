@@ -32,11 +32,20 @@ export default function Navbar() {
                     <Link href={"/"}     
                      className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary  after:transition-all after:duration-300  hover:after:w-full"
                     >Home</Link>
-                    <Link href={"/"}
+                    <Link   href="/#live-bazaars"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("live-bazaars")?.scrollIntoView({ behavior: "smooth" });
+  }}
                                              className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     
                     >Live Bazaars</Link>
-                    <Link href={"/"}
+                        <Link 
+                                                 href="/#upcoming-bazaars"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("upcoming-bazaars")?.scrollIntoView({ behavior: "smooth" });
+  }}
                                              className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >Upcoming Bazaars</Link>
         
@@ -124,7 +133,7 @@ export default function Navbar() {
     ${open ? "translate-x-0" : "-translate-x-full"}`}
 >
       
-        {/* Header */}
+      
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
           <span className="uppercase font-medium text-[23px] text-background">
             Bazaarna
@@ -144,13 +153,12 @@ export default function Navbar() {
     after:transition-all after:duration-300
     hover:after:w-full"
                     >Home</Link>
-                    <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
-                    
+                    <Link href={"/#live-bazaars"}
+   className="relative hover:text-primary transition-colors duration-300  after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary   after:transition-all after:duration-300  hover:after:w-full"
+                      onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("live-bazaars")?.scrollIntoView({ behavior: "smooth" });
+  }}
                     >Live Bazaars</Link>
                     <Link href={"/"}
                                              className="relative hover:text-primary transition-colors duration-300

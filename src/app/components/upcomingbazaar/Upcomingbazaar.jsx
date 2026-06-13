@@ -18,7 +18,7 @@ export default function Upcomingbazaar({ upcoming }) {
 };
 
   return (
-    <section className=" w-[100%] lg:w-[90%] py-10">
+    <section id="upcoming-bazaars" className=" w-[100%] lg:w-[90%] py-10">
      
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold">

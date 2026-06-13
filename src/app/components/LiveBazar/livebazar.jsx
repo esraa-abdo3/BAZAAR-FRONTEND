@@ -13,7 +13,7 @@ export default function LiveBazaar({ livebazars }) {
   if (!featured) return null;
 
   return (
-    <section className="w-[95%] mx-auto px-4 sm:px-6 lg:px-10 py-10 min-h-screen">
+    <section  id="live-bazaars" className="w-[95%] mx-auto px-4 sm:px-6 lg:px-10 py-10 min-h-screen scroll-mt-20">
  
       <div className="flex items-start justify-between mb-6">
         <div>

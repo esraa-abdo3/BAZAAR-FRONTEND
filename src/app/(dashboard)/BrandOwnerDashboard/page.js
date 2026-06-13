@@ -14,7 +14,7 @@ import BrandSettings from "@/app/components/Dashboard/BrandownerDashboard/BrandS
 export default function BrandOwnerDashboard() {
   const [activePage, setActivePage] = useState("overview");
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [editProduct, setEditProduct] = useState(null); // null = add, object = edit
+  const [editProduct, setEditProduct] = useState(null); 
   const [brandInfo, setBrandInfo] = useState({ name: "", tagline: "" });
 
   useEffect(() => {

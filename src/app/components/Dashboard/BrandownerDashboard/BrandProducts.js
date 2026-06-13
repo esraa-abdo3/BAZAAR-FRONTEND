@@ -109,7 +109,7 @@ export default function BrandProducts({ onAddNew, onEdit }) {
   ).length;
 
   return (
-    <div className="max-w-5xl">
+    <div className="max-w-6xl m-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs text-stone-400 mb-1">Dashboard / products</p>

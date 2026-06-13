@@ -33,8 +33,8 @@ export default function Login() {
 
     try {
       setLoading(true);
-      await login(form);
-      router.push("/"); 
+      await login({ ...form, router });
+   
     } catch (err) {
       setError({
         server:

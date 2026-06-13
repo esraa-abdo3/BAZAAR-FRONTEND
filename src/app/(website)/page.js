@@ -43,8 +43,14 @@ export default  async function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans ">
       <HeroSection />
-      <Livebazaar livebazars={bazars} />
-      <Upcomingbazaar upcoming={upcomingbazaars} />
+  
+
+   
+        <Livebazaar livebazars={bazars}  id="live-bazaars" />
+
+   <Upcomingbazaar upcoming={upcomingbazaars} />
+   
+   
  
     </div>
   );
