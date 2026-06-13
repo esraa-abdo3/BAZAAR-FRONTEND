@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HeroSection() {
   return (
     <section className="relative w-[90%] m-auto my-2 h-screen min-h-[600px] overflow-hidden font-sans rounded-[8px]  mt-20">
@@ -38,13 +40,16 @@ export default function HeroSection() {
     to Online  Marketplace
   </h1>
 
-  <div className="flex gap-4 flex-wrap justify-center">
-    <button
+        <div className="flex gap-4 flex-wrap justify-center">
+          <Link href={"/Bazaarcreation"}>
+               <button
       className="px-6 py-3 rounded-[8px] text-white text-m font-medium  backdrop-blur-sm transition-all duration-300 hover:scale-[.98]  cursor-pointer"
       style={{ background: "rgba(90, 100, 70, 0.55)" }}
     >
       Create a Bazaar
     </button>
+          </Link>
+ 
 
     <button
       className="px-6 py-3 rounded-[8px] text-gray-900 text-m font-medium bg-white transition-all duration-300 hover:bg-white/90 cursor-pointer"

@@ -45,8 +45,7 @@ export default  async function Home() {
       <HeroSection />
       <Livebazaar livebazars={bazars} />
       <Upcomingbazaar upcoming={upcomingbazaars} />
-      <Footer/>
-      
+ 
     </div>
   );
 }
