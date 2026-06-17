@@ -5,6 +5,7 @@ import {TrendingUp,TrendingDown,PlusCircle,PenLine,Trash2,ChevronRight,ChevronLe
 import {LineChart,Line,BarChart,Bar,XAxis,YAxis,Tooltip,ResponsiveContainer,CartesianGrid,} from "recharts";
 import DashboardHeader from "../../components/Dashboard/BazarownerDashboard/DashboardHeader";
 import {getDashboard,getBrandComparison,getSalesByHour} from "../../services/dashboardhomeService";
+import Link from "next/link";
 
 
 const PERIOD_MAP = {
@@ -49,19 +50,21 @@ export default function BazaarOwnerDashboardPage() {
 
   const [timeFilter, setTimeFilter] = useState("Full Day");
   const [page, setPage] = useState(1);
-  const LIMIT = 5;
+  const LIMIT = 10;
   const [totals, setTotals] = useState(null);
   const [brands, setBrands] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [brandComparison, setBrandComparison] = useState([]);
   const [salesData, setSalesData] = useState([]);
-
   const [loadingMain, setLoadingMain] = useState(true);
   const [loadingChart, setLoadingChart] = useState(false);
   const [loadingSales, setLoadingSales] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(
+  new Date().toISOString().split("T")[0]
+);
 
-  // ─ Fetch dashboard (totals + brands table) ─
+
   const fetchDashboard = useCallback(async (p) => {
     try {
       setLoadingMain(true);
@@ -76,46 +79,50 @@ export default function BazaarOwnerDashboardPage() {
     }
   }, []);
 
-  // ─ Fetch brand comparison chart ─
+ 
   const fetchComparison = useCallback(async () => {
     try {
       setLoadingChart(true);
       const data = await getBrandComparison();
       setBrandComparison(
-        data.map((b) => ({ name: b.brandName, value: b.totalRevenue }))
+        data.map((b) => ({ name: b.brandName + ` : ${b.totalRevenue}`+" EGP", value: b.totalRevenue }))
       );
     } catch {
-      // silent — chart stays empty
+      
     } finally {
       setLoadingChart(false);
     }
   }, []);
 
-  // ─ Fetch sales by hour ─
-  const fetchSales = useCallback(async (period) => {
-    try {
-      setLoadingSales(true);
-      const today = new Date().toISOString().split("T")[0];
-      const data = await getSalesByHour({ date: today, period });
-      // API returns a single object or array — normalise to array
-      const arr = Array.isArray(data) ? data : [data];
-      setSalesData(
-        arr
-          .filter((d) => d?.hour !== undefined)
-          .map((d) => ({
-            time: formatHour(d.hour),
-            revenue: d.revenue ?? 0,
-            orders: d.orders ?? 0,
-          }))
-      );
-    } catch {
-      setSalesData([]);
-    } finally {
-      setLoadingSales(false);
-    }
-  }, []);
 
-  // ─ Initial load ─
+  const fetchSales = useCallback(async (period, date = selectedDate) => {
+  try {
+    setLoadingSales(true);
+
+    const data = await getSalesByHour({
+      date,
+      period,
+    });
+
+    const arr = Array.isArray(data) ? data : [data];
+
+    setSalesData(
+      arr
+        .filter((d) => d?.hour !== undefined)
+        .map((d) => ({
+          time: formatHour(d.hour),
+          revenue: d.revenue ?? 0,
+          orders: d.orders ?? 0,
+        }))
+    );
+  } catch {
+    setSalesData([]);
+  } finally {
+    setLoadingSales(false);
+  }
+}, [selectedDate]);
+
+
   useEffect(() => {
     fetchDashboard(page);
     fetchComparison();
@@ -129,7 +136,7 @@ export default function BazaarOwnerDashboardPage() {
     fetchDashboard(page);
   }, [page]);
 
-  // ─ Stat cards config ─
+
   const stats = totals
     ? [
         {
@@ -150,7 +157,7 @@ export default function BazaarOwnerDashboardPage() {
       ]
     : [];
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+ 
   return (
     <>
       <DashboardHeader greeting="good morning" />
@@ -171,7 +178,7 @@ export default function BazaarOwnerDashboardPage() {
             Performance across all brand channels
           </p>
 
-          {/* Stat Cards */}
+     
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             {loadingMain
               ? Array.from({ length: 3 }).map((_, i) => (
@@ -237,10 +244,10 @@ export default function BazaarOwnerDashboardPage() {
                     <YAxis
                       type="category"
                       dataKey="name"
-                      tick={{ fontSize: 11, fill: "#9ca3af" }}
+                      tick={{ fontSize: 14, fill: "#9ca3af" }}
                       axisLine={false}
                       tickLine={false}
-                      width={90}
+                      width={180}
                     />
                     <Tooltip
                       cursor={{ fill: "transparent" }}
@@ -281,6 +288,15 @@ export default function BazaarOwnerDashboardPage() {
                       {t}
                     </button>
                   ))}
+                  <input
+  type="date"
+  value={selectedDate}
+  onChange={(e) => {
+    setSelectedDate(e.target.value);
+    fetchSales(timeFilter, e.target.value);
+  }}
+  className="text-xs border rounded-md px-2 py-1 text-gray-600"
+/>
                 </div>
               </div>
               {loadingSales ? (
@@ -325,7 +341,7 @@ export default function BazaarOwnerDashboardPage() {
 
     
         <section>
-          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-gray-800">
                 Brand Management
@@ -335,6 +351,11 @@ export default function BazaarOwnerDashboardPage() {
                   ? `${pagination.totalBrands} Verified Partners`
                   : "Loading..."}
               </p>
+            </div>
+            <div className="bg-[#4f46e5] text-white py-2 px-4 rounded-[8px] text-sm font-bold hover:scale-[.98] transition-all duration-200">
+              <Link href={"/"}>
+                Add Brand
+              </Link>
             </div>
         
           </div>
