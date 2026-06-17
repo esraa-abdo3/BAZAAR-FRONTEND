@@ -2,16 +2,43 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Store, Tag, Settings, User, X, Menu, } from "lucide-react";
+import {
+  LayoutDashboard,
+  Store,
+  Settings,
+  User,
+  X,
+  Menu,
+
+  Brain,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/BazaarOwnerDashboard" },
-  { label: "Bazaar Control", icon: Store, href: "/BazaarOwnerDashboard/bazaarcontrol" },
-  { label: "Settings", icon: Settings, href: "/BazaarOwnerDashboard/settings" },
+  {
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/BazaarOwnerDashboard",
+  },
+    {
+    label: "AI Insights",
+    icon: Brain,
+    href: "/BazaarOwnerDashboard/aiinsights",
+  },
+  {
+    label: "Bazaar Control",
+    icon: Store,
+    href: "/BazaarOwnerDashboard/bazaarcontrol",
+  },
+
+  {
+    label: "Settings",
+    icon: Settings,
+    href: "/BazaarOwnerDashboard/settings",
+  },
 ];
 
 export default function Sidebar({ active }) {
