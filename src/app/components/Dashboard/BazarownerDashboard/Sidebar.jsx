@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -9,6 +10,7 @@ import {
   User,
   X,
   Menu,
+  Clock,
 
   Brain,
 } from "lucide-react";
@@ -16,12 +18,20 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { getWaitingList } from "../../../services/Bazaarwaitingservice";
+import { getBazaarSetting } from "../../../services/bazaarSettingsService";
 
 const navLinks = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
     href: "/BazaarOwnerDashboard",
+  },
+  {
+    label: "Waiting List",
+    icon: Clock,
+    href: "/BazaarOwnerDashboard/Waitinglist",
+    badgeKey: "waiting",
   },
     {
     label: "AI Insights",
@@ -43,8 +53,22 @@ const navLinks = [
 
 export default function Sidebar({ active }) {
   const [open, setOpen] = useState(false);
+  const [waitingCount, setWaitingCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
+  const [bazaarName, setBazaarName] = useState("");
+
+  useEffect(() => {
+    const loadWaitingCount = async () => {
+      try {
+        const list = await getWaitingList();
+        setWaitingCount(list.filter((e) => e.status === "PENDING").length);
+      } catch (err) {
+        // Silently ignore — badge just won't show a count
+      }
+    };
+    loadWaitingCount();
+  }, [pathname]);
 
 const handleLogout = async () => {
   try {
@@ -67,7 +91,19 @@ const handleLogout = async () => {
     localStorage.removeItem("user");
     router.push("/auth/login");
   }
-};
+  };
+  useEffect(() => {
+  const loadBazaarData = async () => {
+    try {
+      const setting = await getBazaarSetting();
+      setBazaarName(setting?.bazaarName || "Bazaar Owner");
+    } catch (error) {
+      setBazaarName("Bazaar Owner");
+    }
+  };
+
+  loadBazaarData();
+}, []);
 
   return (
     <>
@@ -129,19 +165,26 @@ const handleLogout = async () => {
 
          
           <nav className="flex flex-col gap-1">
-            {navLinks.map(({ label, icon: Icon, href }) => (
+            {navLinks.map(({ label, icon: Icon, href, badgeKey }) => (
               <Link
                 key={label}
                 href={href}
                 onClick={() => setOpen(false)}
-               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+               className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
   pathname === href
     ? "bg-indigo-50 text-indigo-600"
     : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
 }`}
               >
-                <Icon size={16} />
-                {label}
+                <span className="flex items-center gap-3">
+                  <Icon size={16} />
+                  {label}
+                </span>
+                {badgeKey === "waiting" && waitingCount > 0 && (
+                  <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-semibold leading-none">
+                    {waitingCount}
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -153,7 +196,9 @@ const handleLogout = async () => {
             <User size={15} className="text-amber-700" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-gray-800 truncate">Alex Rivers</p>
+         <p className="text-xs font-semibold text-gray-800 truncate">
+  {bazaarName}
+</p>
                         <button
   onClick={handleLogout}
   className="flex items-center  gap-0.5 mt-1   text-xs font-medium text-red-500 cursor-pointer  transition w-full"
