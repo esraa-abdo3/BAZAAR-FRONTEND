@@ -49,12 +49,19 @@ export default function Navbar() {
                                              className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >Upcoming Bazaars</Link>
         
-                    <Link href={"/"}
-                    
+                    <Link href="/#who-we-are"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("who-we-are")?.scrollIntoView({ behavior: "smooth" });
+  }}
  className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >About Us</Link>
                    
-                    <Link href={"/"}
+                    <Link href="/#contact"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+  }}
                     className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >contact us</Link>
               
@@ -160,7 +167,11 @@ export default function Navbar() {
     document.getElementById("live-bazaars")?.scrollIntoView({ behavior: "smooth" });
   }}
                     >Live Bazaars</Link>
-                    <Link href={"/"}
+                    <Link href="/#upcoming-bazaars"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("upcoming-bazaars")?.scrollIntoView({ behavior: "smooth" });
+  }}
                                              className="relative hover:text-primary transition-colors duration-300
     after:content-[''] after:absolute after:bottom-0 after:left-0
     after:h-[2px] after:w-0 after:bg-primary
@@ -168,8 +179,12 @@ export default function Navbar() {
     hover:after:w-full"
                     >Upcoming Bazaars</Link>
         
-                    <Link href={"/"}
-                    
+                    <Link href="/#who-we-are"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("who-we-are")?.scrollIntoView({ behavior: "smooth" });
+    close();
+  }}
                                          className="relative hover:text-primary transition-colors duration-300
     after:content-[''] after:absolute after:bottom-0 after:left-0
     after:h-[2px] after:w-0 after:bg-primary
@@ -177,7 +192,12 @@ export default function Navbar() {
     hover:after:w-full"
                     >About Us</Link>
                    
-                    <Link href={"/"}
+                    <Link href="/#contact"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+    close();
+  }}
                                              className="relative hover:text-primary transition-colors duration-300
     after:content-[''] after:absolute after:bottom-0 after:left-0
     after:h-[2px] after:w-0 after:bg-primary
