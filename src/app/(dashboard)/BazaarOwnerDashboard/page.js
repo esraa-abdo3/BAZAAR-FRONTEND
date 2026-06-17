@@ -6,6 +6,7 @@ import {LineChart,Line,BarChart,Bar,XAxis,YAxis,Tooltip,ResponsiveContainer,Cart
 import DashboardHeader from "../../components/Dashboard/BazarownerDashboard/DashboardHeader";
 import {getDashboard,getBrandComparison,getSalesByHour} from "../../services/dashboardhomeService";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 const PERIOD_MAP = {
@@ -62,7 +63,8 @@ export default function BazaarOwnerDashboardPage() {
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
   new Date().toISOString().split("T")[0]
-);
+  );
+  const router = useRouter();
 
 
   const fetchDashboard = useCallback(async (p) => {
@@ -353,7 +355,7 @@ export default function BazaarOwnerDashboardPage() {
               </p>
             </div>
             <div className="bg-[#4f46e5] text-white py-2 px-4 rounded-[8px] text-sm font-bold hover:scale-[.98] transition-all duration-200">
-              <Link href={"/"}>
+              <Link href={"/BazaarOwnerDashboard/Addbrand"}>
                 Add Brand
               </Link>
             </div>
@@ -393,7 +395,8 @@ export default function BazaarOwnerDashboardPage() {
                         </tr>
                       ))
                     : brands.map((brand, i) => (
-                        <tr
+                      <tr
+                        onClick={() => router.push(`/BazaarOwnerDashboard/updatebrand/${brand.brandId}`)}
                           key={brand.brandId}
                           className={`border-b border-gray-50 transition-colors ${
                             i === 0 ? "bg-gray-50" : "hover:bg-gray-50"
