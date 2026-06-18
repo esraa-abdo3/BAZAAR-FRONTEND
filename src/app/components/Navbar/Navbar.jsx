@@ -21,14 +21,14 @@ export default function Navbar() {
         <>
         
 <div className="fixed top-0 left-0 w-full z-50 bg-white py-3 shadow-lg shadow-primary/10 ">
-            <div className="container w-[90%] m-auto flex justify-between items-center">
+            <div className="container w-[85%] m-auto flex justify-between items-center">
                     <div className="logo uppercase  font-medium text-[23px] text-background cursor-pointer">
                         <Link href={"/"}>
                                  Bazaarna
                         </Link>
                
                 </div>
-                <div className="links hidden lg:flex justify-center gap-3 items-center px-1 capitalize text-gray-400 font-medium">
+                <div className="links hidden lg:flex justify-between gap-5 items-center px-1 capitalize text-gray-400 font-medium">
                     <Link href={"/"}     
                      className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary  after:transition-all after:duration-300  hover:after:w-full"
                     >Home</Link>

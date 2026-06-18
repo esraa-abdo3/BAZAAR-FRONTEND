@@ -18,6 +18,8 @@ bazaarWaitingAxios.interceptors.request.use((config) => {
 export async function getWaitingList() {
   const bazaar = await getBazaarSetting();
   const bazaarId = bazaar?._id;
+  
+
   if (!bazaarId) {
     throw new Error("Couldn't determine bazaar ID from settings.");
   }
@@ -27,7 +29,9 @@ export async function getWaitingList() {
 
 
 export async function approveWaitingEntry(waitingId) {
+  console.log("waiting id", waitingId)
   const res = await bazaarWaitingAxios.patch(`/waiting/${waitingId}/approve`);
+  
   return res.data;
 }
 

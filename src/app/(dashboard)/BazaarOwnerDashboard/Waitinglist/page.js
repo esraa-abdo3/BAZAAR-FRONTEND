@@ -160,6 +160,7 @@ export default function WaitingListPage() {
     setError(null);
     try {
       const list = await getWaitingList();
+      console.log("list waiting", list)
       setEntries(list.filter((e) => e.status === "PENDING"));
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || "Failed to load waiting list.");
