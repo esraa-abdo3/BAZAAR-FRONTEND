@@ -75,24 +75,19 @@ function MiniAreaChart({ orders }) {
 }
 
 export default function BrandOverview({ onViewOrders, onViewProducts }) {
-  const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const [p, o] = await Promise.allSettled([
-          axios.get(`${BASE_URL}/brand/products`, { headers: getHeaders() }),
+        const [d, o] = await Promise.allSettled([
+          axios.get(`${BASE_URL}/brand/dashboard`, { headers: getHeaders() }),
           axios.get(`${BASE_URL}/brand/orders`, { headers: getHeaders() }),
         ]);
-        if (p.status === "fulfilled") {
-          const list =
-            p.value.data?.data?.products ??
-            p.value.data?.data ??
-            p.value.data ??
-            [];
-          setProducts(Array.isArray(list) ? list : []);
+        if (d.status === "fulfilled") {
+          setDashboard(d.value.data?.data ?? null);
         }
         if (o.status === "fulfilled") {
           const list =
@@ -109,37 +104,14 @@ export default function BrandOverview({ onViewOrders, onViewProducts }) {
     load();
   }, []);
 
-  const totalRevenue = orders
-    .filter((o) => (o.status ?? "").toLowerCase() === "delivered")
-    .reduce(
-      (a, o) => a + Number(o.totalAmount ?? o.totalPrice ?? o.total ?? 0),
-      0,
-    );
-  const avgOrderValue = orders.length ? totalRevenue / orders.length : 0;
-  const lowStock = products.filter(
-    (p) =>
-      (p.stock ?? p.quantity ?? 0) <= 5 && (p.stock ?? p.quantity ?? 0) > 0,
-  );
-  const outOfStock = products.filter((p) => (p.stock ?? p.quantity ?? 0) === 0);
+  const totalRevenue = dashboard?.totalRevenue ?? 0;
+  const ordersCount = dashboard?.ordersCount ?? orders.length;
+  const avgOrderValue = dashboard?.avgOrderValue ?? 0;
+  const topProducts = dashboard?.topSelling ?? [];
+  const inventoryRisks = dashboard?.inventoryRisks ?? [];
   const recentOrders = [...orders]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 5);
-
-  // Compute units sold per product from order items (backend doesn't provide a `sold` field)
-  const soldMap = {};
-  orders.forEach((o) => {
-    (o.items ?? []).forEach((item) => {
-      const pid = item.productId;
-      soldMap[pid] = (soldMap[pid] ?? 0) + Number(item.quantity ?? 0);
-    });
-  });
-  const productsWithSold = products.map((p) => ({
-    ...p,
-    sold: soldMap[p._id] ?? 0,
-  }));
-  const topProducts = [...productsWithSold]
-    .sort((a, b) => b.sold - a.sold)
-    .slice(0, 2);
 
   const [orderFilter, setOrderFilter] = useState("All");
   const filteredOrders =
@@ -186,7 +158,7 @@ export default function BrandOverview({ onViewOrders, onViewProducts }) {
             Orders Count
           </p>
           <p className="text-3xl font-bold text-stone-900 mb-1">
-            {orders.length.toLocaleString()}
+            {ordersCount.toLocaleString()}
           </p>
           <div className="flex items-center gap-1 mb-4">
             <svg
@@ -341,8 +313,8 @@ export default function BrandOverview({ onViewOrders, onViewProducts }) {
               <p className="text-xs text-stone-400">No products yet</p>
             ) : (
               <div className="flex flex-col gap-3">
-                {topProducts.map((p, i) => (
-                  <div key={p._id ?? i} className="flex items-center gap-3">
+                {topProducts.slice(0, 2).map((p, i) => (
+                  <div key={i} className="flex items-center gap-3">
                     {p.images?.[0] ? (
                       <img
                         src={p.images[0]}
@@ -357,17 +329,17 @@ export default function BrandOverview({ onViewOrders, onViewProducts }) {
                         {p.name}
                       </p>
                       <p className="text-[10px] text-stone-400">
-                        {p.category ?? "—"}
+                        {p.quantity ?? 0} in stock
                       </p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-xs font-bold text-[#3d4f38]">
-                        {p.sold} sold
+                        {p.totalSold ?? 0} sold
                       </p>
                       <p className="text-[10px] text-stone-400">
                         +$
                         {(
-                          (p.sold * Number(p.priceAfterOffer ?? p.price ?? 0)) /
+                          ((p.totalSold ?? 0) * Number(p.price ?? 0)) /
                           1000
                         ).toFixed(1)}
                         k rev
@@ -396,14 +368,14 @@ export default function BrandOverview({ onViewOrders, onViewProducts }) {
                 Inventory Risks
               </h3>
             </div>
-            {lowStock.length === 0 && outOfStock.length === 0 ? (
+            {inventoryRisks.length === 0 ? (
               <p className="text-xs text-stone-400">
                 All stock levels are healthy
               </p>
             ) : (
               <div className="flex flex-col gap-2">
-                {[...outOfStock, ...lowStock].slice(0, 3).map((p, i) => {
-                  const stock = p.stock ?? p.quantity ?? 0;
+                {inventoryRisks.slice(0, 3).map((p, i) => {
+                  const stock = p.quantity ?? 0;
                   return (
                     <div
                       key={p._id ?? i}
