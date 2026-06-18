@@ -32,22 +32,12 @@ export default function Navbar() {
                     <Link href={"/"}     
                      className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary  after:transition-all after:duration-300  hover:after:w-full"
                     >Home</Link>
-                    <Link   href="/#live-bazaars"
-  onClick={(e) => {
-    e.preventDefault();
-    document.getElementById("live-bazaars")?.scrollIntoView({ behavior: "smooth" });
-  }}
+                    <Link   href="/explore"
+
                                              className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     
-                    >Live Bazaars</Link>
-                        <Link 
-                                                 href="/#upcoming-bazaars"
-  onClick={(e) => {
-    e.preventDefault();
-    document.getElementById("upcoming-bazaars")?.scrollIntoView({ behavior: "smooth" });
-  }}
-                                             className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
-                    >Upcoming Bazaars</Link>
+                    >Explore Bazaars</Link>
+    
         
                     <Link href="/#who-we-are"
   onClick={(e) => {
