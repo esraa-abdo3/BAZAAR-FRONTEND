@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-const BASE_URL = "https://bazary-backend.vercel.app/api";
-function getHeaders() {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+import { getBrandDashboard } from "@/app/services/brandService";
 
 const TABS = [
   { key: "pricing",     label: "Pricing",     icon: "M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" },
@@ -24,11 +18,9 @@ export default function BrandAIInsights() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await axios.get(`${BASE_URL}/brand/dashboard`, {
-          headers: getHeaders(),
-        });
-        const payload = res.data?.data ?? res.data ?? {};
-        setData(payload.aiAssistant ?? null);
+        const res = await getBrandDashboard();
+        const payload = res?.data?.aiAssistant ?? null;
+        setData(payload);
       } catch (err) {
         setError(err?.response?.data?.message ?? "Failed to load AI insights.");
       } finally {

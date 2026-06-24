@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+// axios import removed; using brandService with auth interceptor
 import BrandAIInsights from "./BrandAIInsights";
 
-const BASE_URL = "https://bazary-backend.vercel.app/api";
-function getHeaders() {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+import { getBrandDashboard, getBrandOrders } from "@/app/services/brandService";
 
 const STATUS_STYLES = {
   confirmed: "bg-blue-100 text-blue-700",
@@ -78,25 +73,19 @@ export default function BrandOverview({ onViewOrders, onViewProducts }) {
   const [orders, setOrders] = useState([]);
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const [d, o] = await Promise.allSettled([
-          axios.get(`${BASE_URL}/brand/dashboard`, { headers: getHeaders() }),
-          axios.get(`${BASE_URL}/brand/orders`, { headers: getHeaders() }),
-        ]);
-        if (d.status === "fulfilled") {
-          setDashboard(d.value.data?.data ?? null);
-        }
-        if (o.status === "fulfilled") {
-          const list =
-            o.value.data?.data?.orders ??
-            o.value.data?.data ??
-            o.value.data ??
-            [];
-          setOrders(Array.isArray(list) ? list : []);
-        }
+        const dashboardRes = await getBrandDashboard();
+        const ordersRes = await getBrandOrders();
+        setDashboard(dashboardRes?.data ?? null);
+        const list = ordersRes?.data?.orders ?? ordersRes?.data ?? [];
+        setOrders(Array.isArray(list) ? list : []);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Failed to load data");
       } finally {
         setLoading(false);
       }

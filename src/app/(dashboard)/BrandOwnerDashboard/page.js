@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+// axios import removed; using brandService with auth interceptor
 import BrandSidebar from "@/app/components/Dashboard/BrandownerDashboard/BrandSidebar";
 import BrandHeader from "@/app/components/Dashboard/BrandownerDashboard/BrandHeader";
 import BrandOverview from "@/app/components/Dashboard/BrandownerDashboard/BrandOverview";
 import BrandOrders from "@/app/components/Dashboard/BrandownerDashboard/BrandOrders";
 import BrandOrderDetail from "@/app/components/Dashboard/BrandownerDashboard/BrandOrderDetail";
 import BrandProducts from "@/app/components/Dashboard/BrandownerDashboard/BrandProducts";
-import BrandAddProduct from "@/app/components/Dashboard/BrandownerDashboard/BrandAddProduct";
+import { getBrandProfile } from "@/app/services/brandService";
 import BrandSettings from "@/app/components/Dashboard/BrandownerDashboard/BrandSettings";
 import BrandReviews from "@/app/components/Dashboard/BrandownerDashboard/BrandReviews";
 
@@ -21,15 +21,8 @@ export default function BrandOwnerDashboard() {
   useEffect(() => {
     async function loadBrand() {
       try {
-        const token =
-          typeof window !== "undefined" ? localStorage.getItem("token") : null;
-        const res = await axios.get(
-          "https://bazary-backend.vercel.app/api/brand",
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          },
-        );
-        const data = res.data?.data ?? res.data ?? {};
+        const res = await getBrandProfile();
+        const data = res?.data ?? res ?? {};
         setBrandInfo({
           id: data._id ?? data.id ?? "",
           name: data.brandName ?? data.name ?? "",
