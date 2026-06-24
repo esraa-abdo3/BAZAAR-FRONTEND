@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 export default function ShopHero() {
   return (
-    <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-[#f8f9fa] mt-[40px]">
+    <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-[#f8f9fa] mt-[0px]">
     
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"

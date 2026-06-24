@@ -20,15 +20,15 @@ export default function Navbar() {
     return (
         <>
         
-<div className="fixed top-0 left-0 w-full z-50 bg-white py-3 shadow-lg shadow-primary/10 ">
-            <div className="container w-[85%] m-auto flex justify-between items-center">
-                    <div className="logo uppercase  font-medium text-[23px] text-background cursor-pointer">
+<div className="fixed top-0 left-0 w-full z-50 bg-white h-[60px] flex items-center shadow-lg shadow-primary/10">
+            <div className="container w-[95%] lg:w-[85%] mx-auto flex items-center relative">
+                    <div className="logo uppercase font-medium text-[23px] text-background cursor-pointer flex-1">
                         <Link href={"/"}>
                                  Bazaarna
                         </Link>
                
                 </div>
-                <div className="links hidden lg:flex justify-between gap-5 items-center px-1 capitalize text-gray-400 font-medium">
+                <div className="links hidden lg:flex justify-center gap-5 items-center px-1 capitalize text-gray-400 font-medium absolute left-1/2 -translate-x-1/2">
                     <Link href={"/"}     
                      className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary  after:transition-all after:duration-300  hover:after:w-full"
                     >Home</Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
                     >contact us</Link>
               
                 </div>
-                    <div className="auth hidden md:flex gap-4 capitalize ">
+                    <div className="auth hidden md:flex gap-4 capitalize flex-1 justify-end items-center">
                         {!token &&
                                     <button className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500  cursor-pointer">
                             <Link href={"/auth/login"}>
@@ -109,7 +109,7 @@ export default function Navbar() {
                     
             <button
           onClick={openfun}
-              className="md:hidden flex flex-col gap-1.5 p-1"
+              className="md:hidden flex flex-col gap-1.5 p-1 ml-auto"
               aria-label="open menu"
             >
               <span className="w-6 h-0.5 bg-background block" />

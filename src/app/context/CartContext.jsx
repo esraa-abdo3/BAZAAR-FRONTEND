@@ -208,6 +208,8 @@ export function CartProvider({ children }) {
                 },
                 body: JSON.stringify({ bazaarId, productId, quantity }),
             });
+            console.log("res", res)
+            console.log({bazaarId, productId, quantity })
 
             const data = await res.json();
 
@@ -221,7 +223,7 @@ export function CartProvider({ children }) {
                 return;
             }
 
-            dispatch({ type: "SET_CART", payload: data.data });
+            await getCart();
         } catch (err) {
             dispatch({ type: "SET_ERROR", payload: err.message });
         }
@@ -263,7 +265,7 @@ export function CartProvider({ children }) {
             }
 
             if (data?.data?.items) {
-                dispatch({ type: "SET_CART", payload: data.data });
+                await getCart();
             }
         } catch (err) {
             await getCart();
@@ -303,7 +305,7 @@ export function CartProvider({ children }) {
             }
 
             if (data?.data !== undefined) {
-                dispatch({ type: "SET_CART", payload: data.data });
+                await getCart();
             }
         } catch (err) {
             await getCart();
@@ -314,34 +316,34 @@ export function CartProvider({ children }) {
     /**
      * Clear the entire cart using DELETE /cart
      */
-    const clearCart = async () => {
-        const token = getToken();
-        if (!isValidToken(token)) {
-            dispatch({ type: "OPEN_LOGIN" });
-            return;
-        }
-
-        try {
-            const res = await fetch(BASE_URL, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (!res.ok) {
-                if (res.status === 401) {
-                    dispatch({ type: "OPEN_LOGIN" });
-                    return;
-                }
-                const data = await res.json().catch(() => ({}));
-                dispatch({ type: "SET_ERROR", payload: data?.message || "Failed to clear cart" });
+        const clearCart = async () => {
+            const token = getToken();
+            if (!isValidToken(token)) {
+                dispatch({ type: "OPEN_LOGIN" });
                 return;
             }
 
-            dispatch({ type: "SET_CART", payload: null });
-        } catch (err) {
-            dispatch({ type: "SET_ERROR", payload: err.message });
-        }
-    };
+            try {
+                const res = await fetch(BASE_URL, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        dispatch({ type: "OPEN_LOGIN" });
+                        return;
+                    }
+                    const data = await res.json().catch(() => ({}));
+                    dispatch({ type: "SET_ERROR", payload: data?.message || "Failed to clear cart" });
+                    return;
+                }
+
+                dispatch({ type: "SET_CART", payload: null });
+            } catch (err) {
+                dispatch({ type: "SET_ERROR", payload: err.message });
+            }
+        };
 
     /**
      * Fetch the current cart using GET /cart
