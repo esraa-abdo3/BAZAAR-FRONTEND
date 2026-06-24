@@ -4,6 +4,64 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useCart } from "../../../../../context/CartContext";
 
+function StarRatingComponent({ rating, size = 16, interactive = false, onChange }) {
+  const [hoverRating, setHoverRating] = useState(0);
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const fillValue = hoverRating || rating;
+        const isFilled = star <= fillValue;
+        return (
+          <button
+            key={star}
+            type="button"
+            disabled={!interactive}
+            onClick={() => onChange && onChange(star)}
+            onMouseEnter={() => interactive && setHoverRating(star)}
+            onMouseLeave={() => interactive && setHoverRating(0)}
+            className={`${interactive ? "cursor-pointer transition-transform hover:scale-110" : "cursor-default"}`}
+          >
+            <svg
+              width={size}
+              height={size}
+              viewBox="0 0 24 24"
+              fill={isFilled ? "#f59e0b" : "none"}
+              stroke={isFilled ? "#f59e0b" : "#d6d3d1"}
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M11.48 3.499c.15-.461.782-.461.932 0l1.374 4.225a1 1 0 00.95.69h4.436c.484 0 .684.62.293.925l-3.59 2.585a1 1 0 00-.364 1.118l1.374 4.226c.15.461-.377.844-.768.552l-3.59-2.585a1 1 0 00-1.175 0l-3.59 2.585c-.391.292-.918-.09-.768-.552l1.374-4.226a1 1 0 00-.364-1.118l-3.59-2.585c-.391-.305-.19-.925.293-.925h4.436a1 1 0 00.95-.69l1.374-4.225z"
+              />
+            </svg>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function getLoggedInUserId() {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (!token) return null;
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    const parsed = JSON.parse(jsonPayload);
+    return parsed.id || parsed._id || parsed.userId || null;
+  } catch {
+    return null;
+  }
+}
+
 export default function BrandProfile() {
   const { id, brandid } = useParams();
   const router = useRouter();
@@ -15,10 +73,69 @@ export default function BrandProfile() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   const [search, setSearch] = useState("");
   const [priceFilter, setPriceFilter] = useState("all"); 
   const [onlySale, setOnlySale] = useState(false);
+
+  // Reviews states
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [newRating, setNewRating] = useState(5);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [editingReviewId, setEditingReviewId] = useState(null);
+
+  async function fetchReviews() {
+    if (!brandid) return;
+    setLoadingReviews(true);
+    try {
+      const res = await fetch(`https://bazary-backend.vercel.app/api/events/brands/${brandid}/reviews`);
+      const json = await res.json();
+      setReviews(json.reviews || []);
+      setAvgRating(json.avgRating || 0);
+      setRatingCount(json.ratingCount || 0);
+    } catch (err) {
+      console.log("Failed to fetch brand reviews", err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  }
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setSubmittingReview(true);
+    setReviewError("");
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      setReviewError("Please login to write a review.");
+      setSubmittingReview(false);
+      return;
+    }
+    try {
+      const method = editingReviewId ? "PATCH" : "POST";
+      const res = await fetch(`https://bazary-backend.vercel.app/api/events/brands/${brandid}/review`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ rating: newRating })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to save review");
+      }
+      setNewRating(5);
+      setEditingReviewId(null);
+      fetchReviews();
+    } catch (err) {
+      setReviewError(err.message || "Something went wrong");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchAll() {
@@ -44,7 +161,10 @@ export default function BrandProfile() {
         setLoading(false);
       }
     }
-    if (id && brandid) fetchAll();
+    if (id && brandid) {
+      fetchAll();
+      fetchReviews();
+    }
   }, [id, brandid]);
 
   const filteredProducts = products
@@ -355,6 +475,118 @@ export default function BrandProfile() {
           ))}
         </div>
       )}
+
+      {/* ── BRAND REVIEWS SECTION ── */}
+      <div className="border-t border-stone-200 mt-12 pt-10">
+        <h3 className="text-lg font-bold text-[#22301D] mb-6">Brand Reviews & Ratings</h3>
+
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Analytics Summary */}
+          <div className="w-full lg:w-1/3 bg-stone-50 border border-stone-200 rounded-2xl p-6 h-fit text-center">
+            <p className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-1">Average Brand Rating</p>
+            <p className="text-5xl font-extrabold text-[#22301D] mb-2">{Number(avgRating).toFixed(1)}</p>
+            <div className="flex justify-center">
+              <StarRatingComponent rating={Math.round(avgRating)} size={20} />
+            </div>
+            <p className="text-xs text-stone-400 mt-2">Based on {ratingCount} review{ratingCount === 1 ? "" : "s"}</p>
+          </div>
+
+          {/* Reviews Actions */}
+          <div className="w-full lg:w-2/3 flex flex-col gap-6">
+            {/* Form to Submit / Edit Review */}
+            <div className="bg-white border border-stone-200 rounded-2xl p-6">
+              <h4 className="text-sm font-bold text-[#22301D] mb-3">
+                {editingReviewId ? "Edit Your Brand Rating" : "Rate This Brand"}
+              </h4>
+              {reviewError && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2 rounded-lg mb-3">
+                  {reviewError}
+                </div>
+              )}
+              <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
+                <div className="flex items-center justify-between bg-stone-50 p-4 rounded-xl border border-stone-100">
+                  <span className="text-xs font-semibold text-stone-500">Select Rating:</span>
+                  <StarRatingComponent
+                    rating={newRating}
+                    size={28}
+                    interactive={true}
+                    onChange={(r) => setNewRating(r)}
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  {editingReviewId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingReviewId(null);
+                        setNewRating(5);
+                      }}
+                      className="px-4 py-1.5 border border-stone-200 text-xs font-semibold text-stone-600 rounded-lg hover:bg-stone-50"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    className="px-5 py-1.5 bg-[#50604A] text-white text-xs font-semibold rounded-lg hover:bg-[#22301D] transition-colors disabled:opacity-60"
+                  >
+                    {submittingReview ? "Saving..." : editingReviewId ? "Update Rating" : "Submit Rating"}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Rating List */}
+            <div className="flex flex-col gap-4">
+              <h4 className="text-sm font-bold text-[#22301D] border-b border-stone-100 pb-2">Customer Feedback</h4>
+              {loadingReviews ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-5 h-5 border-2 border-t-transparent border-[#50604A] rounded-full animate-spin" />
+                </div>
+              ) : reviews.length === 0 ? (
+                <p className="text-xs text-stone-400 italic">No ratings yet for this brand. Be the first to rate!</p>
+              ) : (
+                <div className="divide-y divide-stone-100">
+                  {reviews.map((rev) => {
+                    const isOwn = (rev.userId?._id || rev.userId) === getLoggedInUserId();
+                    return (
+                      <div key={rev._id} className="py-4 first:pt-0 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <StarRatingComponent rating={rev.rating} size={14} />
+                          <span className="text-[10px] text-stone-500 font-medium">
+                            User: ...{(rev.userId?._id || String(rev.userId)).slice(-6)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] text-stone-400">
+                            {new Date(rev.createdAt).toLocaleDateString(undefined, {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                          {isOwn && (
+                            <button
+                              onClick={() => {
+                                setEditingReviewId(rev._id);
+                                setNewRating(rev.rating);
+                              }}
+                              className="text-[10px] font-bold text-[#50604A] hover:underline"
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
