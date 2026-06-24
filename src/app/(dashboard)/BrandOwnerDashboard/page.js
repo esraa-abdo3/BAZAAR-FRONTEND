@@ -10,12 +10,13 @@ import BrandOrderDetail from "@/app/components/Dashboard/BrandownerDashboard/Bra
 import BrandProducts from "@/app/components/Dashboard/BrandownerDashboard/BrandProducts";
 import BrandAddProduct from "@/app/components/Dashboard/BrandownerDashboard/BrandAddProduct";
 import BrandSettings from "@/app/components/Dashboard/BrandownerDashboard/BrandSettings";
+import BrandReviews from "@/app/components/Dashboard/BrandownerDashboard/BrandReviews";
 
 export default function BrandOwnerDashboard() {
   const [activePage, setActivePage] = useState("overview");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editProduct, setEditProduct] = useState(null); // null = add, object = edit
-  const [brandInfo, setBrandInfo] = useState({ name: "", tagline: "" });
+  const [brandInfo, setBrandInfo] = useState({ id: "", name: "", tagline: "" });
 
   useEffect(() => {
     async function loadBrand() {
@@ -30,6 +31,7 @@ export default function BrandOwnerDashboard() {
         );
         const data = res.data?.data ?? res.data ?? {};
         setBrandInfo({
+          id: data._id ?? data.id ?? "",
           name: data.brandName ?? data.name ?? "",
           tagline: data.category ?? "Global Marketplace",
         });
@@ -89,6 +91,8 @@ export default function BrandOwnerDashboard() {
         );
       case "settings":
         return <BrandSettings />;
+      case "reviews":
+        return <BrandReviews brandId={brandInfo.id} />;
       default:
         return <BrandOverview />;
     }
