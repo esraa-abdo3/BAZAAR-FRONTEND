@@ -43,11 +43,11 @@ export default function CheckoutPage() {
     const token = localStorage.getItem("token");
 
     try {
-      // Group items by brand and bazaar because the endpoint requires them in the URL
+
       const ordersByBrand = {};
       
       cart.items.forEach((item) => {
-        // the cart item has bazaarId and brandId
+      
         const key = `${item.bazaarId}_${item.brandId}`;
         if (!ordersByBrand[key]) {
           ordersByBrand[key] = {

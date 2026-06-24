@@ -37,6 +37,12 @@ export default function Navbar() {
                                              className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     
                     >Explore Bazaars</Link>
+
+                    <Link   href="/shop"
+
+                                             className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                    
+                    >Shop</Link>
     
         
                     <Link href="/#who-we-are"
@@ -168,6 +174,17 @@ export default function Navbar() {
     after:transition-all after:duration-300
     hover:after:w-full"
                     >Upcoming Bazaars</Link>
+
+                    <Link href="/shop"
+  onClick={(e) => {
+    close();
+  }}
+                                             className="relative hover:text-primary transition-colors duration-300
+    after:content-[''] after:absolute after:bottom-0 after:left-0
+    after:h-[2px] after:w-0 after:bg-primary
+    after:transition-all after:duration-300
+    hover:after:w-full"
+                    >Shop</Link>
         
                     <Link href="/#who-we-are"
   onClick={(e) => {

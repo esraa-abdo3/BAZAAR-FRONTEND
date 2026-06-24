@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -64,8 +65,8 @@ export default function BrandProfile() {
     <div className="w-[100%] lg:w-[85%] mx-auto px-4 py-6 pb-12 mt-15">
 
       {openLogin && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl w-[90%] max-w-sm text-center">
+        <div className="fixed inset-0  flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl w-[90%] max-w-sm text-center shadow-m">
             <h2 className="text-lg font-bold mb-2">Please login first</h2>
             <p className="text-sm text-gray-500 mb-4">
               You need to login to add products to cart
@@ -329,8 +330,12 @@ export default function BrandProfile() {
                     onClick={async (e) => {
                       e.stopPropagation();
                       setAddingId(product._id);
-                      try { await addToCart(product._id, 1); }
-                      finally { setAddingId(null); }
+                      try {
+                        // bazaarId comes from the route param `id`
+                        await addToCart(product._id, id, 1);
+                      } finally {
+                        setAddingId(null);
+                      }
                     }}
                     className={`w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center
                       ${product.quantity === 0 || addingId === product._id
