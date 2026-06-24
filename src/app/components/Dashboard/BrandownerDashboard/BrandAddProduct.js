@@ -89,7 +89,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
   const previewImg   = previews[0] ?? null;
 
   return (
-    <div className="max-w-6xl">
+    <div className="max-w-6xl m-auto">
       {/* Header */}
       <button onClick={onBack} className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors mb-5">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

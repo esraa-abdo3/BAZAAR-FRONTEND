@@ -14,6 +14,7 @@ brandAxios.interceptors.request.use((config) => {
 // ── AUTH ─────────────────────────────────────────────────────────────────────
 // POST /auth/bazaars/:bazaarId/brands/register
 export async function registerBrand(bazaarId, data) {
+  console.log("idbazar", id)
   const res = await brandAxios.post(
     `/auth/bazaars/${bazaarId}/brands/register`,
     data,

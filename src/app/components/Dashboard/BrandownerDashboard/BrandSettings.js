@@ -136,7 +136,7 @@ export default function BrandSettings() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl m-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

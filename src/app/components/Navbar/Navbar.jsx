@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-
+import { FiShoppingCart } from "react-icons/fi";
+import { useCart } from "../../context/CartContext";
 export default function Navbar() {
     const [open, setsopen] = useState(false);
+    const { cartCount } = useCart();
     const openfun = () => {
         setsopen(true)
         
@@ -12,68 +14,91 @@ export default function Navbar() {
     const close = () => {
         setsopen(false)
     }
+   const token = typeof window !== "undefined"
+  ? localStorage.getItem("token")
+  : null;
     return (
         <>
         
-       <div className="w-full py-3 shadow-lg shadow-primary/10">
-            <div className="container w-[90%] m-auto flex justify-between items-center">
-                <div className="logo uppercase  font-medium text-[23px] text-background">
-                    Bazaarna
+<div className="fixed top-0 left-0 w-full z-50 bg-white py-3 shadow-lg shadow-primary/10 ">
+            <div className="container w-[85%] m-auto flex justify-between items-center">
+                    <div className="logo uppercase  font-medium text-[23px] text-background cursor-pointer">
+                        <Link href={"/"}>
+                                 Bazaarna
+                        </Link>
+               
                 </div>
-                <div className="links hidden md:flex justify-center gap-4 items-center px-2 capitalize text-gray-400 font-medium">
-                    <Link href={"/"}
-                    
-                     className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                <div className="links hidden lg:flex justify-between gap-5 items-center px-1 capitalize text-gray-400 font-medium">
+                    <Link href={"/"}     
+                     className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary  after:transition-all after:duration-300  hover:after:w-full"
                     >Home</Link>
-                    <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                    <Link   href="/explore"
+
+                                             className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     
-                    >Live Bazaars</Link>
-                    <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
-                    >Upcoming Bazaars</Link>
+                    >Explore Bazaars</Link>
+    
         
-                    <Link href={"/"}
-                    
-                                         className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                    <Link href="/#who-we-are"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("who-we-are")?.scrollIntoView({ behavior: "smooth" });
+  }}
+ className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >About Us</Link>
                    
-                    <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
+                    <Link href="/#contact"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+  }}
+                    className="relative hover:text-primary transition-colors duration-300 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                     >contact us</Link>
               
                 </div>
-                <div className="auth hidden md:flex gap-4 capitalize ">
-                        <button className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500  cursor-pointer">
+                    <div className="auth hidden md:flex gap-4 capitalize ">
+                        {!token &&
+                                    <button className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500  cursor-pointer">
                             <Link href={"/auth/login"}>
                                    login
                             </Link>
                          
                         </button>
-                        <button className="rounded-[8px] px-4 py-1 bg-primary text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500 cursor-pointer" >
-                          
-                            <Link href={'/auth/signup'}>  sign up</Link>
-                        </button>
+                        }
+                
+ <Link
+    href="/cart"
+    className="relative flex items-center"
+                        >
+                            <div>
+    <FiShoppingCart
+        size={24}
+        className="text-background"
+    />
+                            </div>
+
+
+
+        <div
+            className="
+                absolute
+                -top-[8px]
+                -right-3
+                w-5
+                h-5
+                rounded-full
+                bg-primary
+                text-white
+                text-xs
+                flex
+                items-center
+                justify-center
+            "
+        >
+         <span> {cartCount}</span>  
+        </div>
+
+</Link>
                 </div>
                     
             <button
@@ -101,11 +126,11 @@ export default function Navbar() {
 
    
 <div
-  className={`fixed top-0 left-0 h-full w-[50%] bg-white shadow-2xl transition-all duration-300 ease-in-out z-50
+  className={`fixed top-0 left-0 w-full z-50 h-full  bg-white shadow-2xl transition-all duration-300 ease-in-out z-50
     ${open ? "translate-x-0" : "-translate-x-full"}`}
 >
       
-        {/* Header */}
+      
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
           <span className="uppercase font-medium text-[23px] text-background">
             Bazaarna
@@ -125,15 +150,18 @@ export default function Navbar() {
     after:transition-all after:duration-300
     hover:after:w-full"
                     >Home</Link>
-                    <Link href={"/"}
-                                             className="relative hover:text-primary transition-colors duration-300
-    after:content-[''] after:absolute after:bottom-0 after:left-0
-    after:h-[2px] after:w-0 after:bg-primary
-    after:transition-all after:duration-300
-    hover:after:w-full"
-                    
+                    <Link href={"/#live-bazaars"}
+   className="relative hover:text-primary transition-colors duration-300  after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary   after:transition-all after:duration-300  hover:after:w-full"
+                      onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("live-bazaars")?.scrollIntoView({ behavior: "smooth" });
+  }}
                     >Live Bazaars</Link>
-                    <Link href={"/"}
+                    <Link href="/#upcoming-bazaars"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("upcoming-bazaars")?.scrollIntoView({ behavior: "smooth" });
+  }}
                                              className="relative hover:text-primary transition-colors duration-300
     after:content-[''] after:absolute after:bottom-0 after:left-0
     after:h-[2px] after:w-0 after:bg-primary
@@ -141,8 +169,12 @@ export default function Navbar() {
     hover:after:w-full"
                     >Upcoming Bazaars</Link>
         
-                    <Link href={"/"}
-                    
+                    <Link href="/#who-we-are"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("who-we-are")?.scrollIntoView({ behavior: "smooth" });
+    close();
+  }}
                                          className="relative hover:text-primary transition-colors duration-300
     after:content-[''] after:absolute after:bottom-0 after:left-0
     after:h-[2px] after:w-0 after:bg-primary
@@ -150,7 +182,12 @@ export default function Navbar() {
     hover:after:w-full"
                     >About Us</Link>
                    
-                    <Link href={"/"}
+                    <Link href="/#contact"
+  onClick={(e) => {
+    e.preventDefault();
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+    close();
+  }}
                                              className="relative hover:text-primary transition-colors duration-300
     after:content-[''] after:absolute after:bottom-0 after:left-0
     after:h-[2px] after:w-0 after:bg-primary

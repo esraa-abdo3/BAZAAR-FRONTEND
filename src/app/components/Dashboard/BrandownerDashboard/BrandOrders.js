@@ -80,13 +80,13 @@ export default function BrandOrders({ onViewDetail }) {
   });
 
   return (
-    <div className="max-w-5xl">
-      {/* Breadcrumb */}
+    <div className="max-w-6xl m-auto">
+   
       <p className="text-xs text-stone-400 mb-1">Atelier / Order Management</p>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-stone-900">All Orders</h1>
         <div className="flex gap-2">
-          <button className="flex items-center gap-1.5 text-xs border border-stone-200 px-4 py-2 rounded-lg text-stone-600 hover:bg-stone-50 transition-colors font-medium">
+          {/* <button className="flex items-center gap-1.5 text-xs border border-stone-200 px-4 py-2 rounded-lg text-stone-600 hover:bg-stone-50 transition-colors font-medium">
             <svg
               width="13"
               height="13"
@@ -98,7 +98,7 @@ export default function BrandOrders({ onViewDetail }) {
               <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Export pdf
-          </button>
+          </button> */}
           <button className="flex items-center gap-1.5 text-xs bg-[#3d4f38] text-white px-4 py-2 rounded-lg hover:bg-[#22301D] transition-colors font-medium">
             <svg
               width="13"
@@ -115,7 +115,7 @@ export default function BrandOrders({ onViewDetail }) {
         </div>
       </div>
 
-      {/* Filter tabs */}
+   
       <div className="flex gap-1 mb-4">
         {FILTERS.map((f) => (
           <button
@@ -129,7 +129,7 @@ export default function BrandOrders({ onViewDetail }) {
         ))}
       </div>
 
-      {/* Search */}
+  
       <div className="relative mb-5">
         <svg
           className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
@@ -151,7 +151,7 @@ export default function BrandOrders({ onViewDetail }) {
         />
       </div>
 
-      {/* Table */}
+  
       <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
         {loading ? (
           <div className="flex justify-center py-20">

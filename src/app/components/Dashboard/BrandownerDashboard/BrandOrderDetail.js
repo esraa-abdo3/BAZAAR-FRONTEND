@@ -45,8 +45,8 @@ export default function BrandOrderDetail({ order, onBack }) {
   };
 
   return (
-    <div className="max-w-5xl">
-      {/* Back */}
+    <div className="max-w-6xl m-auto">
+   
       <button
         onClick={onBack}
         className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors mb-5"

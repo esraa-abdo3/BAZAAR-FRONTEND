@@ -1,10 +1,20 @@
+import Footer from "../components/Footer/Footer";
 import Navbar from "../components/Navbar/Navbar";
+import { CartProvider } from "../context/CartContext";
 
-export default function WebsiteLayout({ children }) {
+export default function MainLayout({ children }) {
+
+
   return (
-    <>
-      <Navbar />
-      {children}
-    </>
+    <div>  
+      <CartProvider>
+        <Navbar/> 
+        {children}
+        <Footer/>
+     </CartProvider>
+      </div>
+
+  
+
   );
 }

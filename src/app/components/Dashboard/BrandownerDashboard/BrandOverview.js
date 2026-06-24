@@ -20,7 +20,7 @@ const STATUS_STYLES = {
   cancelled: "bg-red-100 text-red-700",
 };
 
-// Simple bar chart using divs
+
 function MiniBarChart({ orders }) {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const counts = days.map(
@@ -43,7 +43,6 @@ function MiniBarChart({ orders }) {
   );
 }
 
-// Simple area chart SVG
 function MiniAreaChart({ orders }) {
   const pts = Array.from({ length: 8 }, (_, i) => {
     const count = orders.filter((o) => {
@@ -134,7 +133,7 @@ export default function BrandOverview({ onViewOrders, onViewProducts }) {
   }
 
   return (
-    <div className="max-w-6xl">
+    <div className="max-w-6xl m-auto">
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
         {/* Revenue */}
