@@ -1,12 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiShoppingCart } from "react-icons/fi";
 import { useCart } from "../../context/CartContext";
 export default function Navbar() {
     const [open, setsopen] = useState(false);
     const { cartCount } = useCart();
+    const [token, setToken] = useState(null);
+
+    useEffect(() => {
+        setToken(localStorage.getItem("token"));
+    }, []);
+
     const openfun = () => {
         setsopen(true)
         
@@ -14,9 +20,6 @@ export default function Navbar() {
     const close = () => {
         setsopen(false)
     }
-   const token = typeof window !== "undefined"
-  ? localStorage.getItem("token")
-  : null;
     return (
         <>
         
@@ -56,14 +59,14 @@ export default function Navbar() {
                     >contact us</Link>
               
                 </div>
-                    <div className="auth hidden md:flex gap-4 capitalize ">
+                    <div className="auth hidden md:flex gap-4 capitalize items-center">
                         {!token &&
-                                    <button className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500  cursor-pointer">
-                            <Link href={"/auth/login"}>
-                                   login
+                            <Link
+                                href="/auth/login"
+                                className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500 cursor-pointer"
+                            >
+                                login
                             </Link>
-                         
-                        </button>
                         }
                 
  <Link
@@ -76,6 +79,7 @@ export default function Navbar() {
         className="text-background"
     />
                             </div>
+
 
 
 
@@ -98,8 +102,10 @@ export default function Navbar() {
          <span> {cartCount}</span>  
         </div>
 
+
 </Link>
                 </div>
+
                     
             <button
           onClick={openfun}
