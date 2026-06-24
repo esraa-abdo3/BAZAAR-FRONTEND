@@ -348,6 +348,7 @@ export default function ProductProfile() {
                   {(product.priceAfterOffer || product.price) * (cartQuantity || 0)} EGP
                 </span>
               </div>
+            )}
           </div>
 
           {/* ── REVIEWS SECTION ── */}
