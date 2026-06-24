@@ -124,14 +124,26 @@ export default function ProductProfile() {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || "Failed to save review");
+        const msg = data.message || "";
+        if (msg.includes("duplicate") || msg.includes("dup key") || res.status === 409) {
+          throw new Error("You already submitted a review for this product. Please edit it instead.");
+        }
+        if (res.status === 401 || res.status === 403) {
+          throw new Error("Please login first to write a review.");
+        }
+        throw new Error(msg || "Failed to save review");
       }
       setNewComment("");
       setNewRating(5);
       setEditingReviewId(null);
       fetchReviews();
     } catch (err) {
-      setReviewError(err.message || "Something went wrong");
+      const msg = err.message || "";
+      if (msg.includes("duplicate") || msg.includes("dup key")) {
+        setReviewError("You already submitted a review for this product. Please edit it instead.");
+      } else {
+        setReviewError(msg || "Something went wrong, please try again.");
+      }
     } finally {
       setSubmittingReview(false);
     }

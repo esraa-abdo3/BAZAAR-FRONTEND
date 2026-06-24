@@ -125,13 +125,25 @@ export default function BrandProfile() {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || "Failed to save review");
+        const msg = data.message || "";
+        if (msg.includes("duplicate") || msg.includes("dup key") || res.status === 409) {
+          throw new Error("You already rated this brand. Please edit your existing rating instead.");
+        }
+        if (res.status === 401 || res.status === 403) {
+          throw new Error("Please login first to rate this brand.");
+        }
+        throw new Error(msg || "Failed to save rating");
       }
       setNewRating(5);
       setEditingReviewId(null);
       fetchReviews();
     } catch (err) {
-      setReviewError(err.message || "Something went wrong");
+      const msg = err.message || "";
+      if (msg.includes("duplicate") || msg.includes("dup key")) {
+        setReviewError("You already rated this brand. Please edit your existing rating instead.");
+      } else {
+        setReviewError(msg || "Something went wrong, please try again.");
+      }
     } finally {
       setSubmittingReview(false);
     }
