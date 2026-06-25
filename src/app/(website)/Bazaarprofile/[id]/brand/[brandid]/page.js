@@ -62,7 +62,7 @@ export default function BrandProfile() {
   const hasActiveFilter = search || onlySale || priceFilter !== "all";
 
   return (
-    <div className="w-[100%] lg:w-[85%] mx-auto px-4 py-6 pb-12 mt-15">
+    <div className="w-[100%] lg:w-[100%] mx-auto  py-6 pb-12 ">
 
       {openLogin && (
         <div className="fixed inset-0  flex items-center justify-center z-50">
@@ -128,7 +128,9 @@ export default function BrandProfile() {
         </div>
       </div>
 
-  
+      <div className="w-[100%] lg:w-[85%] m-auto">
+        
+ 
       {loading ? (
         <div className="flex items-center gap-4 mb-6 animate-pulse">
           <div className="w-16 h-16 rounded-2xl bg-gray-200 flex-shrink-0" />
@@ -359,7 +361,8 @@ export default function BrandProfile() {
             </div>
           ))}
         </div>
-      )}
+        )}
+         </div>
     </div>
   );
 }

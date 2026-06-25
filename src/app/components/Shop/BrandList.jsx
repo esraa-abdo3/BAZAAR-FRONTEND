@@ -56,7 +56,7 @@ export default function BrandList({ brands, loading }) {
             transition={{ duration: 0.4, delay: index * 0.05 }}
           >
             <Link 
-              href={`/explore/${brand.bazaarId}/${brand._id}`}
+              href={`/Bazaarprofile/${brand.bazaarId}/brand/${brand._id}`}
               className={`flex flex-col items-center justify-center p-4 cursor-pointer rounded-xl transition-all duration-300 hover:bg-gray-50 border border-transparent hover:border-gray-100 hover:shadow-sm`}
             >
             <div className={`w-30 h-30 rounded-full overflow-hidden mb-3 border-2 border-gray-100 shadow-sm group-hover:border-primary transition-all duration-300`}>
