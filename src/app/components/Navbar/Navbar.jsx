@@ -240,26 +240,45 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { FiShoppingCart } from "react-icons/fi";
 import { useCart } from "../../context/CartContext";
 
 export default function Navbar() {
-    const [open, setsopen] = useState(false);
+    const [open, setOpen] = useState(false);
     const { cartCount } = useCart();
     const pathname = usePathname();
 
-    const openfun = () => {
-        setsopen(true)
-        
-    }
-    const close = () => {
-        setsopen(false)
-    }
-   const token = typeof window !== "undefined"
-  ? localStorage.getItem("token")
-  : null;
+    const [token, setToken] = useState(null);
+
+    useEffect(() => {
+        setToken(localStorage.getItem("token"));
+    }, []);
+
+    useEffect(() => {
+        document.body.style.overflow = open ? "hidden" : "";
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [open]);
+
+    useEffect(() => {
+        const onKeyDown = (e) => {
+            if (e.key === "Escape") close();
+        };
+        document.addEventListener("keydown", onKeyDown);
+        return () => document.removeEventListener("keydown", onKeyDown);
+    }, []);
+
+    const openMenu = () => setOpen(true);
+    const close = () => setOpen(false);
+
+    const logout = () => {
+        localStorage.removeItem("token");
+        setToken(null);
+        close();
+    };
 
     // Returns the active classes when the current path matches the link's href
     const isActive = (href) => pathname === href;
@@ -312,14 +331,22 @@ export default function Navbar() {
               
                 </div>
                     <div className="auth hidden md:flex gap-4 capitalize flex-1 justify-end items-center">
-                        {!token &&
-                                    <button className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500  cursor-pointer">
-                            <Link href={"/auth/login"}>
-                                   login
+                    <div className="auth hidden md:flex gap-4 capitalize items-center">
+                        {!token ? (
+                            <Link
+                                href="/auth/login"
+                                className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500 cursor-pointer"
+                            >
+                                login
                             </Link>
-                         
-                        </button>
-                        }
+                        ) : (
+                            <button
+                                onClick={logout}
+                                className="rounded-[8px] border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white flex items-center capitalize transition-all hover:scale-[.98] duration-500 cursor-pointer"
+                            >
+                                logout
+                            </button>
+                        )}
                 
  <Link
     href="/cart"
@@ -331,6 +358,7 @@ export default function Navbar() {
         className={isActive("/cart") ? "text-primary" : "text-background"}
     />
                             </div>
+
 
 
 
@@ -353,12 +381,14 @@ export default function Navbar() {
          <span> {cartCount}</span>  
         </div>
 
+
 </Link>
                 </div>
+
                     
             <button
-          onClick={openfun}
-              className="md:hidden flex flex-col gap-1.5 p-1 ml-auto"
+          onClick={openMenu}
+              className="lg:hidden flex flex-col gap-1.5 p-1 ml-auto"
               aria-label="open menu"
             >
               <span className="w-6 h-0.5 bg-background block" />
@@ -375,7 +405,7 @@ export default function Navbar() {
               onClick={
                   close
               }
-        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 md:hidden
+        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 lg:hidden
           ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       />
 
@@ -398,63 +428,61 @@ export default function Navbar() {
             <div className=" flex flex-col justify-between h-[90%]">
                                <div className="links  flex  flex-col py-4  gap-5  px-2 capitalize text-gray-400 font-medium">
                     <Link href={"/"}
-                    
+                     onClick={close}
                      className={linkClass("/")}
                     >Home</Link>
-                    <Link href={"/#live-bazaars"}
-   className={linkClass("/#live-bazaars")}
-                      onClick={(e) => {
-    e.preventDefault();
-    document.getElementById("live-bazaars")?.scrollIntoView({ behavior: "smooth" });
-  }}
-                    >Live Bazaars</Link>
-                    <Link href="/#upcoming-bazaars"
-  onClick={(e) => {
-    e.preventDefault();
-    document.getElementById("upcoming-bazaars")?.scrollIntoView({ behavior: "smooth" });
-  }}
-                     className={linkClass("/#upcoming-bazaars")}
-                    >Upcoming Bazaars</Link>
+
+                    <Link href="/explore"
+                     onClick={close}
+                     className={linkClass("/explore")}
+                    >Explore Bazaars</Link>
 
                     <Link href="/shop"
-  onClick={(e) => {
-    close();
-  }}
+                     onClick={close}
                      className={linkClass("/shop")}
                     >Shop</Link>
-        
+
                     <Link href="/my-orders"
-  onClick={(e) => {
-    e.preventDefault();
-    document.getElementById("who-we-are")?.scrollIntoView({ behavior: "smooth" });
-    close();
-  }}
+                     onClick={close}
                      className={linkClass("/my-orders")}
                     >My orders</Link>
-                   
+
                     <Link href="/#contact"
-  onClick={(e) => {
-    e.preventDefault();
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-    close();
-  }}
+                     onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                        close();
+                     }}
                      className={linkClass("/#contact")}
                     >contact us</Link>
-              
+
                     </div>
                         <div className="flex flex-col gap-2 px-6  ">
-          <button className="rounded-[8px] px-4 py-2 text-primary border border-primary capitalize w-full">
-                            <Link href={"/auth/login"}>
-                                  login
-                            </Link>
-                          
-          </button>
-                        <button className="rounded-[8px] px-4 py-2 bg-primary text-white capitalize w-full">
-                            <Link href={"/auth/signup"}>
-                                 sign up
-                            </Link>
-           
-          </button>
+          {!token ? (
+            <>
+              <Link
+                href="/auth/login"
+                onClick={close}
+                className="rounded-[8px] px-4 py-2 text-primary border border-primary capitalize w-full text-center"
+              >
+                login
+              </Link>
+              <Link
+                href="/auth/signup"
+                onClick={close}
+                className="rounded-[8px] px-4 py-2 bg-primary text-white capitalize w-full text-center"
+              >
+                sign up
+              </Link>
+            </>
+          ) : (
+            <button
+              onClick={logout}
+              className="rounded-[8px] px-4 py-2 bg-primary text-white capitalize w-full"
+            >
+              logout
+            </button>
+          )}
         </div>
                     
              </div>
@@ -462,7 +490,8 @@ export default function Navbar() {
   
 
     
-      </div>
+                </div>
+                </div>
                 </>
     )
 }

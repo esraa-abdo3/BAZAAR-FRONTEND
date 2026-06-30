@@ -1,7 +1,7 @@
 import Footer from "../components/Footer/Footer";
 import Navbar from "../components/Navbar/Navbar";
 import { CartProvider } from "../context/CartContext";
-
+import AIAssistantButton from "../components/AIAssistant/Aiassistantbutton";
 export default function MainLayout({ children }) {
 
 
@@ -10,7 +10,8 @@ export default function MainLayout({ children }) {
       <CartProvider>
         <Navbar/> 
         {children}
-        <Footer/>
+        <Footer />
+         <AIAssistantButton />
      </CartProvider>
       </div>
 
