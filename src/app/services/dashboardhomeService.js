@@ -12,21 +12,24 @@ dashboardAxios.interceptors.request.use((config) => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
   if (token) config.headers.Authorization = `Bearer ${token}`;
+  console.log(config)
+
   return config;
 });
 
 
-export async function getDashboard({ page = 1, limit = 10 } = {}) {
+export async function getDashboard({ page = 1, limit = 2 } = {}) {
   const res = await dashboardAxios.get("/dashboard", {
     params: { page, limit },
   });
-  console.log("brands", res.data.data)
+  console.log("branddds", res.data.data)
   return res.data.data; 
 }
 
 
 export async function getBrandComparison() {
   const res = await dashboardAxios.get("/dashboard/brandComparsion");
+
 
   return res.data.data.brands;
 }

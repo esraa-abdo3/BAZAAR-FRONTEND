@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -39,6 +40,9 @@ export default function BazaarSettingsPage() {
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [backgroundPreview, setBackgroundPreview] = useState(null);
+  const [backgroundFile, setBackgroundFile] = useState(null);
+  const backgroundInputRef = useRef(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -57,8 +61,9 @@ export default function BazaarSettingsPage() {
       setPriceOffline(data.priceOffline ?? "");
       setPriceOnline(data.priceOnline ?? "");
       setPriceHybrid(data.priceHybrid ?? "");
-      setMaxBrandCapacity(data.maxBrandCapacity ?? "");
+
       setLogoPreview(data.logoUrl ?? null);
+      setBackgroundPreview(data.backgroundImage ?? null);
     } catch {
       setFetchError("Failed to load settings.");
     } finally {
@@ -78,6 +83,13 @@ export default function BazaarSettingsPage() {
     setLogoPreview(URL.createObjectURL(file));
   };
 
+  const handleBackgroundChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBackgroundFile(file);
+    setBackgroundPreview(URL.createObjectURL(file));
+  };
+
 
   const handleDiscard = () => {
     if (!original) return;
@@ -91,6 +103,8 @@ export default function BazaarSettingsPage() {
     setMaxBrandCapacity(original.maxBrandCapacity ?? "");
     setLogoPreview(original.logoUrl ?? null);
     setLogoFile(null);
+    setBackgroundPreview(original.backgroundImage ?? null);
+    setBackgroundFile(null);
     setSaveError(null);
     setSaveSuccess(false);
   };
@@ -102,7 +116,7 @@ export default function BazaarSettingsPage() {
     setSaveSuccess(false);
     try {
       let body;
-      if (logoFile) {
+      if (logoFile || backgroundFile) {
         body = new FormData();
         body.append("bazaarName", bazaarName);
         body.append("bazaarDescription", bazaarDescription);
@@ -110,8 +124,9 @@ export default function BazaarSettingsPage() {
         body.append("priceOffline", priceOffline);
         body.append("priceOnline", priceOnline);
         body.append("priceHybrid", priceHybrid);
-        body.append("maxBrandCapacity", maxBrandCapacity);
-        body.append("logoUrl", logoFile);
+       
+        if (logoFile) body.append("logoUrl", logoFile);
+        if (backgroundFile) body.append("backgroundImage", backgroundFile);
       } else {
         body = {
           bazaarName,
@@ -121,13 +136,14 @@ export default function BazaarSettingsPage() {
           priceOffline: Number(priceOffline),
           priceOnline: Number(priceOnline),
           priceHybrid: Number(priceHybrid),
-          maxBrandCapacity: Number(maxBrandCapacity),
+         
         };
       }
       const updated = await updateBazaarSetting(body);
         setOriginal((prev) => ({ ...prev, ...updated }));
         setSaving(false)
       setLogoFile(null);
+      setBackgroundFile(null);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
@@ -149,8 +165,9 @@ export default function BazaarSettingsPage() {
       String(priceOffline) !== String(original.priceOffline ?? "") ||
       String(priceOnline) !== String(original.priceOnline ?? "") ||
       String(priceHybrid) !== String(original.priceHybrid ?? "") ||
-      String(maxBrandCapacity) !== String(original.maxBrandCapacity ?? "") ||
-      !!logoFile);
+  
+      !!logoFile ||
+      !!backgroundFile);
 
   const inputCls =
     "w-full px-3 py-2.5 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition placeholder-gray-300 disabled:bg-gray-50 disabled:text-gray-400";
@@ -236,6 +253,56 @@ export default function BazaarSettingsPage() {
                 {logoFile && (
                   <p className="text-[11px] text-emerald-600 truncate max-w-full px-2">
                     ✓ {logoFile.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-gray-50 flex flex-col items-center gap-3">
+                <p className="text-[11px] font-semibold tracking-widest text-gray-400 uppercase self-start">
+                  Background Image
+                </p>
+
+                <div className="w-full h-24 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50 overflow-hidden relative">
+                  {loading ? (
+                    <Skeleton className="w-full h-full rounded-xl" />
+                  ) : backgroundPreview ? (
+                    <img
+                      src={backgroundPreview}
+                      alt="Bazaar Background"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ImagePlus size={22} className="text-gray-300" />
+                  )}
+                </div>
+
+                {!loading && (
+                  <p className="text-[11px] text-gray-400 text-center leading-relaxed">
+                    Shown behind your bazaar's public page.
+                    <br />
+                    Landscape, 1600×600px recommended.
+                  </p>
+                )}
+
+                <input
+                  ref={backgroundInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleBackgroundChange}
+                />
+                {!loading && (
+                  <button
+                    onClick={() => backgroundInputRef.current?.click()}
+                    className="flex items-center gap-1.5 text-xs font-medium text-[#50604a] hover:text-indigo-700 transition-colors cursor-pointer"
+                  >
+                    <Pencil size={12} />
+                    Change Background
+                  </button>
+                )}
+                {backgroundFile && (
+                  <p className="text-[11px] text-emerald-600 truncate max-w-full px-2">
+                    ✓ {backgroundFile.name}
                   </p>
                 )}
               </div>
@@ -413,20 +480,7 @@ export default function BazaarSettingsPage() {
                   )}
                 </Field>
 
-                <Field label="Maximum Brand Capacity">
-                  {loading ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : (
-                    <input
-                      type="number"
-                      min={1}
-                      value={maxBrandCapacity}
-                      onChange={(e) => setMaxBrandCapacity(e.target.value)}
-                      placeholder="e.g. 60"
-                      className={inputCls}
-                    />
-                  )}
-                </Field>
+      
               </div>
             </section>
 

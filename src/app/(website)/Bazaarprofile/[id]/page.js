@@ -96,7 +96,7 @@ export default function Bzaarprofile() {
     }
     if (id) fetchData();
   }, [id]);
-  console.log("bazaaar data",bazaardata)
+ 
 
   
   const categories = [

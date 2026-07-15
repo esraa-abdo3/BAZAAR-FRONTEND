@@ -61,7 +61,7 @@ export default function ShopClient() {
     const fetchTopProducts = async () => {
       try {
         setTopLoading(true);
-        const res = await fetch('https://bazary-backend.vercel.app/api/events/live/top-products?limit=2');
+        const res = await fetch('https://bazary-backend.vercel.app/api/events/live/top-products?limit=4');
         const data = await res.json();
         if (data.status === 'success') {
      

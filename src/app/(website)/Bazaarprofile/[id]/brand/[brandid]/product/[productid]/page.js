@@ -305,6 +305,7 @@ export default function ProductProfile() {
   const isOutOfStock = product?.quantity === 0;
   const isLowStock = product?.quantity > 0 && product?.quantity <= 5;
   const maxQty = product?.quantity || 1;
+  console.log("broduct " , product)
 
   // ── Quantity Handlers ─────────────────────────────────────────────────────
   const handleIncrease = async () => {
@@ -324,7 +325,7 @@ export default function ProductProfile() {
   };
 
   return (
-    <div className="w-[95%] lg:w-[85%] mx-auto px-4 py-6 pb-12 mt-15">
+    <div className="w-[95%] lg:w-[85%] mx-auto px-4 py-6 pb-12 mt-25">
 
       {openLogin && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
