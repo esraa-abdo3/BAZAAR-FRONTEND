@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import BrandPagination from "./BrandPagination";
 
 const BASE_URL = "https://bazary-backend.vercel.app/api";
+const PAGE_SIZE = 5;
 
 function getHeaders() {
   const token =
@@ -75,6 +77,7 @@ export default function BrandReviews({ brandId }) {
   const [modalData, setModalData] = useState({ rating: 5, comment: "" });
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState("");
+  const [page, setPage] = useState(1);
 
   // Fetch brand reviews
   async function loadBrandReviews() {
@@ -228,6 +231,10 @@ export default function BrandReviews({ brandId }) {
     setShowModal(true);
   }
 
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab, selectedProductId]);
+
   // Calculate rating breakdown percentage
   function getRatingBreakdown(reviews) {
     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -247,45 +254,48 @@ export default function BrandReviews({ brandId }) {
   const activeAvg = activeTab === "brand" ? brandAvgRating : productAvgRating;
   const activeCount = activeTab === "brand" ? brandRatingCount : productRatingCount;
   const breakdown = getRatingBreakdown(activeReviews);
+  const totalPages = Math.max(1, Math.ceil(activeReviews.length / PAGE_SIZE));
+  const paginatedReviews = activeReviews.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
 
   return (
-    <div className="max-w-5xl">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+    <div className="w-full max-w-5xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
         <div>
-          <p className="text-xs text-stone-400 mb-1">Dashboard / reviews</p>
-          <h1 className="text-2xl font-bold text-stone-900">Reviews & Feedback</h1>
+          <p className="text-xs text-gray-400 mb-1">Dashboard / Reviews</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+            Reviews & Feedback
+          </h1>
         </div>
       </div>
 
-      {/* Tabs Selector */}
-      <div className="flex border-b border-stone-200 mb-6">
+      <div className="flex border-b border-gray-200 mb-6 overflow-x-auto">
         <button
           onClick={() => setActiveTab("brand")}
-          className={`px-4 py-2.5 font-medium text-xs border-b-2 transition-colors ${
+          className={`px-4 py-2.5 font-medium text-xs border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "brand"
-              ? "border-[#3d4f38] text-[#3d4f38]"
-              : "border-transparent text-stone-400 hover:text-stone-600"
+              ? "border-indigo-600 text-indigo-600"
+              : "border-transparent text-gray-400 hover:text-gray-600"
           }`}
         >
           Brand Reviews
         </button>
         <button
           onClick={() => setActiveTab("product")}
-          className={`px-4 py-2.5 font-medium text-xs border-b-2 transition-colors ${
+          className={`px-4 py-2.5 font-medium text-xs border-b-2 transition-colors whitespace-nowrap ${
             activeTab === "product"
-              ? "border-[#3d4f38] text-[#3d4f38]"
-              : "border-transparent text-stone-400 hover:text-stone-600"
+              ? "border-indigo-600 text-indigo-600"
+              : "border-transparent text-gray-400 hover:text-gray-600"
           }`}
         >
           Product Reviews
         </button>
       </div>
 
-      {/* Summary Analytics Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        {/* Average Rating Big Number */}
-        <div className="bg-white rounded-xl border border-stone-200 p-6 flex flex-col justify-center items-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 flex flex-col justify-center items-center shadow-sm">
           <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider mb-2">
             Average Rating
           </p>
@@ -299,7 +309,7 @@ export default function BrandReviews({ brandId }) {
         </div>
 
         {/* Breakdown bar */}
-        <div className="bg-white rounded-xl border border-stone-200 p-6 md:col-span-2 flex flex-col justify-between">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 md:col-span-2 flex flex-col justify-between shadow-sm">
           <p className="text-[10px] text-stone-400 font-bold uppercase tracking-wider mb-4">
             Rating Distribution
           </p>
@@ -325,29 +335,28 @@ export default function BrandReviews({ brandId }) {
       </div>
 
       {/* Main Reviews Container */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left column options for Product Selection */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         {activeTab === "product" && (
-          <div className="bg-white rounded-xl border border-stone-200 p-5 h-fit">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-4">
+          <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-5 h-fit shadow-sm">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4">
               Select Product
             </h2>
             {loadingProducts ? (
               <div className="flex justify-center py-8">
-                <div className="w-5 h-5 border-2 border-t-transparent border-[#3d4f38] rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-t-transparent border-indigo-400 rounded-full animate-spin" />
               </div>
             ) : products.length === 0 ? (
-              <p className="text-xs text-stone-400">No products found.</p>
+              <p className="text-xs text-gray-400">No products found.</p>
             ) : (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto">
                 {products.map((p) => (
                   <button
                     key={p._id}
                     onClick={() => setSelectedProductId(p._id)}
                     className={`flex items-center gap-3 p-2 rounded-lg border text-left transition-all ${
                       selectedProductId === p._id
-                        ? "border-[#3d4f38] bg-stone-50"
-                        : "border-stone-100 hover:bg-stone-50/50"
+                        ? "border-indigo-600 bg-indigo-50"
+                        : "border-gray-100 hover:bg-gray-50/50"
                     }`}
                   >
                     {p.images?.[0] ? (
@@ -357,13 +366,13 @@ export default function BrandReviews({ brandId }) {
                         className="w-10 h-10 object-cover rounded border shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-stone-100 rounded shrink-0" />
+                      <div className="w-10 h-10 bg-gray-100 rounded shrink-0" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-stone-800 truncate">
+                      <p className="text-xs font-semibold text-gray-800 truncate">
                         {p.name}
                       </p>
-                      <p className="text-[10px] text-[#3d4f38] font-medium">
+                      <p className="text-[10px] text-indigo-600 font-medium">
                         ${Number(p.price || 0).toFixed(2)}
                       </p>
                     </div>
@@ -374,20 +383,18 @@ export default function BrandReviews({ brandId }) {
           </div>
         )}
 
-        {/* Right column: Reviews List */}
         <div
-          className={`bg-white rounded-xl border border-stone-200 overflow-hidden ${
+          className={`bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm ${
             activeTab === "product" ? "md:col-span-2" : "md:col-span-3"
           }`}
         >
-          {/* Header row of list */}
-          <div className="px-5 py-4 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+          <div className="px-4 sm:px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gray-50/50">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-gray-700">
                 {activeTab === "brand" ? "Brand Reviews" : "Product Reviews"}
               </h2>
               {activeTab === "product" && selectedProduct && (
-                <p className="text-[10px] text-stone-400 mt-0.5">
+                <p className="text-[10px] text-gray-400 mt-0.5">
                   Showing feedback for &quot;{selectedProduct.name}&quot;
                 </p>
               )}
@@ -397,30 +404,30 @@ export default function BrandReviews({ brandId }) {
             <button
               onClick={activeTab === "brand" ? openAddBrandModal : openAddProductModal}
               disabled={activeTab === "product" && !selectedProductId}
-              className="text-[11px] font-semibold bg-[#3d4f38] text-white px-3 py-1.5 rounded-lg hover:bg-[#22301D] transition-colors disabled:opacity-50"
+              className="text-[11px] font-semibold bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 shrink-0"
             >
               + Write Review (Demo)
             </button>
           </div>
 
           {/* List display */}
-          <div className="divide-y divide-stone-100">
+          <div className="divide-y divide-gray-100">
             {(activeTab === "brand" ? loadingBrand : loadingProductReviews) ? (
               <div className="flex justify-center py-16">
-                <div className="w-6 h-6 border-2 border-t-transparent border-[#3d4f38] rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-t-transparent border-indigo-400 rounded-full animate-spin" />
               </div>
             ) : activeReviews.length === 0 ? (
               <div className="py-16 text-center">
-                <p className="text-stone-400 text-xs">No reviews found.</p>
+                <p className="text-gray-400 text-xs">No reviews found.</p>
               </div>
             ) : (
-              activeReviews.map((rev) => (
+              paginatedReviews.map((rev) => (
                 <div key={rev._id} className="p-5 flex flex-col gap-2">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
                         <StarRating rating={rev.rating} size={14} />
-                        <span className="text-[10px] font-semibold text-stone-700 bg-stone-100 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold text-gray-700 bg-gray-100 px-2 py-0.5 rounded">
                           Rating: {rev.rating}
                         </span>
                       </div>
@@ -441,7 +448,7 @@ export default function BrandReviews({ brandId }) {
                           ? openEditBrandModal(rev.rating)
                           : openEditProductModal(rev.rating, rev.comment)
                       }
-                      className="text-[10px] font-semibold border border-stone-200 text-stone-600 px-2 py-1 rounded hover:bg-stone-50 transition-colors"
+                      className="text-[10px] font-semibold border border-gray-200 text-gray-600 px-2 py-1 rounded hover:bg-gray-50 transition-colors shrink-0"
                     >
                       Edit (Demo)
                     </button>
@@ -456,6 +463,16 @@ export default function BrandReviews({ brandId }) {
               ))
             )}
           </div>
+          {!loadingBrand && !loadingProductReviews && activeReviews.length > 0 && (
+            <BrandPagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={activeReviews.length}
+              pageSize={PAGE_SIZE}
+              onPageChange={setPage}
+              itemLabel="reviews"
+            />
+          )}
         </div>
       </div>
 
@@ -533,7 +550,7 @@ export default function BrandReviews({ brandId }) {
                 <button
                   type="submit"
                   disabled={modalLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-[#3d4f38] text-white text-xs font-semibold rounded-lg hover:bg-[#22301D] transition-colors disabled:opacity-60"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-60"
                 >
                   {modalLoading && (
                     <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />

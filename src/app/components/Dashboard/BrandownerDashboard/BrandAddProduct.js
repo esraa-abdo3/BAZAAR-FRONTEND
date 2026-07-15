@@ -57,7 +57,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
     const fd = new FormData();
     fd.append("name",        form.name);
     fd.append("description", form.description);
-    fd.append("stock",       form.stock);
+    fd.append("quantity",    form.stock);
     fd.append("price",       form.price);
     if (form.discount) fd.append("discount", form.discount);
     images.forEach((img) => fd.append("images", img));
@@ -89,19 +89,18 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
   const previewImg   = previews[0] ?? null;
 
   return (
-    <div className="max-w-6xl m-auto">
-      {/* Header */}
-      <button onClick={onBack} className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors mb-5">
+    <div className="w-full max-w-6xl mx-auto">
+      <button onClick={onBack} className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-5">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
         Back to Products
       </button>
 
-      <h1 className="text-2xl font-bold text-stone-900 mb-1">
-        {isEdit ? "product title" : "product Addition"}
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+        {isEdit ? (product?.name || "Edit Product") : "Add Product"}
       </h1>
-      <p className="text-xs text-stone-400 mb-7">
+      <p className="text-xs text-gray-400 mb-7">
         Populate your boutique digital storefront with precision. Each entry is curated to maintain the premium integrity of your marketplace presence.
       </p>
 
@@ -113,7 +112,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* ── Form ── */}
-        <div className="bg-white rounded-xl border border-stone-200 p-6 flex flex-col gap-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 flex flex-col gap-6 shadow-sm">
 
           {/* Item Name */}
           <div>
@@ -125,7 +124,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
               value={form.name}
               onChange={handleChange}
               placeholder="E.g., Silk Pleated Midi Dress"
-              className="w-full border-b border-stone-200 pb-2 text-sm text-stone-800 bg-transparent focus:outline-none focus:border-[#3d4f38] transition-colors placeholder:text-stone-300"
+              className="w-full border-b border-gray-200 pb-2 text-sm text-gray-800 bg-transparent focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-gray-300"
             />
           </div>
 
@@ -140,7 +139,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
               onChange={handleChange}
               rows={4}
               placeholder="Narrate the craftsmanship and heritage of this piece..."
-              className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-800 bg-transparent focus:outline-none focus:border-[#3d4f38] transition-colors resize-none placeholder:text-stone-300"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 bg-transparent focus:outline-none focus:border-indigo-500 transition-colors resize-none placeholder:text-gray-300"
             />
           </div>
 
@@ -151,7 +150,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
             </label>
             <div
               onClick={() => fileRef.current?.click()}
-              className="border-2 border-dashed border-stone-200 rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#3d4f38] transition-colors"
+              className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-indigo-500 transition-colors"
             >
               <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" strokeWidth={1.5}>
                 <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -215,7 +214,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
             <label className="block text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-3">
               Valuation &amp; Offers
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] text-stone-400 mb-1">Base Price ($)</label>
                 <input
@@ -246,8 +245,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-              style={{ backgroundColor: "#3d4f38" }}
+              className="w-full py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -267,7 +265,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
         {/* ── Live Preview ── */}
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-3">Live Listing Preview</p>
-          <div className="bg-white rounded-xl border border-stone-200 overflow-hidden sticky top-6">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden sticky top-6 shadow-sm">
             {/* Image area */}
             <div className="aspect-[4/3] bg-stone-100 flex items-center justify-center overflow-hidden">
               {previewImg ? (

@@ -8,7 +8,8 @@ import BrandOverview from "@/app/components/Dashboard/BrandownerDashboard/BrandO
 import BrandOrders from "@/app/components/Dashboard/BrandownerDashboard/BrandOrders";
 import BrandOrderDetail from "@/app/components/Dashboard/BrandownerDashboard/BrandOrderDetail";
 import BrandProducts from "@/app/components/Dashboard/BrandownerDashboard/BrandProducts";
-import { getBrandProfile } from "@/app/services/brandService";
+import BrandAddProduct from "@/app/components/Dashboard/BrandownerDashboard/BrandAddProduct";
+import { getBrandProfile, getBrandDashboard, getBrandOrders } from "@/app/services/brandService";
 import BrandSettings from "@/app/components/Dashboard/BrandownerDashboard/BrandSettings";
 import BrandReviews from "@/app/components/Dashboard/BrandownerDashboard/BrandReviews";
 
@@ -17,6 +18,70 @@ export default function BrandOwnerDashboard() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editProduct, setEditProduct] = useState(null); // null = add, object = edit
   const [brandInfo, setBrandInfo] = useState({ id: "", name: "", tagline: "" });
+
+  // بيانات الداشبورد بقت محفوظة هنا في الأب، مش جوه BrandOverview
+  // عشان متتفقدش لما ننتقل بين الصفحات وترجع تاني
+  // الأوردرز والإحصائيات منفصلين تمامًا عن الـ AI عشان فشل خدمة الـ AI
+  // من ناحية السيرفر ميمنعش ظهور باقي الداشبورد
+  const [dashboardState, setDashboardState] = useState({
+    dashboard: null,
+    orders: [],
+    ordersLoading: true,
+    ordersError: null,
+    aiLoading: true,
+    aiError: null,
+    loadedOnce: false,
+  });
+
+  async function loadDashboardData() {
+    setDashboardState((s) => ({
+      ...s,
+      ordersLoading: true,
+      aiLoading: true,
+      ordersError: null,
+      aiError: null,
+    }));
+
+    // الأوردرز مستقلة تمامًا: بتتحمل حتى لو خدمة الـ AI/الداشبورد وقعت
+    getBrandOrders()
+      .then((ordersRes) => {
+        const list = ordersRes?.data?.orders ?? ordersRes?.data ?? ordersRes ?? [];
+        setDashboardState((s) => ({
+          ...s,
+          orders: Array.isArray(list) ? list : [],
+          ordersLoading: false,
+          ordersError: null,
+          loadedOnce: true,
+        }));
+      })
+      .catch((err) => {
+        setDashboardState((s) => ({
+          ...s,
+          ordersLoading: false,
+          ordersError: err?.response?.data?.message || err.message || "فشل تحميل الأوردرز",
+          loadedOnce: true,
+        }));
+      });
+
+    // بيانات الداشبورد/الـ AI منفصلة: لو فشلت، الأوردرز فوق بتفضل شغالة عادي
+    getBrandDashboard()
+      .then((dashboardRes) => {
+        setDashboardState((s) => ({
+          ...s,
+          dashboard: dashboardRes?.data ?? dashboardRes ?? null,
+          aiLoading: false,
+          aiError: null,
+        }));
+      })
+      .catch((err) => {
+        setDashboardState((s) => ({
+          ...s,
+          dashboard: null,
+          aiLoading: false,
+          aiError: err?.response?.data?.message || err.message || "فشل تحميل بيانات الداشبورد",
+        }));
+      });
+  }
 
   useEffect(() => {
     async function loadBrand() {
@@ -33,6 +98,7 @@ export default function BrandOwnerDashboard() {
       }
     }
     loadBrand();
+    loadDashboardData(); // بتتحمل مرة واحدة بس عند فتح الداشبورد
   }, []);
 
   function renderPage() {
@@ -56,6 +122,13 @@ export default function BrandOwnerDashboard() {
       case "overview":
         return (
           <BrandOverview
+            dashboard={dashboardState.dashboard}
+            orders={dashboardState.orders}
+            ordersLoading={dashboardState.ordersLoading}
+            ordersError={dashboardState.ordersError}
+            aiLoading={dashboardState.aiLoading}
+            aiError={dashboardState.aiError}
+            onRetry={loadDashboardData}
             onViewOrders={() => setActivePage("orders")}
             onViewProducts={() => setActivePage("products")}
           />
@@ -87,12 +160,22 @@ export default function BrandOwnerDashboard() {
       case "reviews":
         return <BrandReviews brandId={brandInfo.id} />;
       default:
-        return <BrandOverview />;
+        return (
+          <BrandOverview
+            dashboard={dashboardState.dashboard}
+            orders={dashboardState.orders}
+            ordersLoading={dashboardState.ordersLoading}
+            ordersError={dashboardState.ordersError}
+            aiLoading={dashboardState.aiLoading}
+            aiError={dashboardState.aiError}
+            onRetry={loadDashboardData}
+          />
+        );
     }
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f5f5f0]">
+    <div className="flex min-h-screen bg-gray-50 lg:ml-[220px]">
       <BrandSidebar
         activePage={activePage}
         setActivePage={setActivePage}
@@ -101,7 +184,9 @@ export default function BrandOwnerDashboard() {
       />
       <div className="flex-1 flex flex-col min-w-0">
         <BrandHeader />
-        <main className="flex-1 overflow-auto p-8">{renderPage()}</main>
+        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+          {renderPage()}
+        </main>
       </div>
     </div>
   );
