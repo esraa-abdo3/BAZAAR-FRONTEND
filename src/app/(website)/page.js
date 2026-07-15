@@ -47,6 +47,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans w-full">
+      
       <HeroSection stats={{ bazaars: liveCount || 24 }} />
       <WhoAreWe />
       <WhyBazaarsMatter />

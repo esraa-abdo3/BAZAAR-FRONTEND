@@ -154,6 +154,7 @@ setBazaar(currentBazaar || null);
     }
     fetchData();
   }, [id]);
+  console.log(bazaar)
 
   const getDaysLeft = (startDate) => {
     const diff = new Date(startDate) - new Date();

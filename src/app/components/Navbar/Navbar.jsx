@@ -242,12 +242,14 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiHeart } from "react-icons/fi";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const { cartCount } = useCart();
+    const { wishlistCount } = useWishlist();
     const pathname = usePathname();
 
     const [token, setToken] = useState(null);
@@ -348,42 +350,67 @@ export default function Navbar() {
                             </button>
                         )}
                 
- <Link
+  <Link
+    href="/wishlist"
+    className="relative flex items-center mr-4"
+  >
+    <div>
+      <FiHeart
+        size={24}
+        className={isActive("/wishlist") ? "text-red-500 fill-red-500" : "text-red-500 hover:fill-red-500 transition-colors duration-200"}
+      />
+    </div>
+    <div
+      className="
+        absolute
+        -top-[8px]
+        -right-3
+        w-5
+        h-5
+        rounded-full
+        bg-primary
+        text-white
+        text-xs
+        flex
+        items-center
+        justify-center
+      "
+    >
+      <span> {wishlistCount}</span>  
+    </div>
+  </Link>
+
+  <Link
     href="/cart"
     className="relative flex items-center"
-                        >
-                            <div>
-    <FiShoppingCart
+  >
+    <div>
+      <FiShoppingCart
         size={24}
         className={isActive("/cart") ? "text-primary" : "text-background"}
-    />
-                            </div>
+      />
+    </div>
 
-
-
-
-        <div
-            className="
-                absolute
-                -top-[8px]
-                -right-3
-                w-5
-                h-5
-                rounded-full
-                bg-primary
-                text-white
-                text-xs
-                flex
-                items-center
-                justify-center
-            "
-        >
-         <span> {cartCount}</span>  
-        </div>
-
-
-</Link>
-                </div>
+    <div
+      className="
+        absolute
+        -top-[8px]
+        -right-3
+        w-5
+        h-5
+        rounded-full
+        bg-primary
+        text-white
+        text-xs
+        flex
+        items-center
+        justify-center
+      "
+    >
+      <span> {cartCount}</span>  
+    </div>
+  </Link>
+</div>
 
                     
             <button
@@ -446,6 +473,11 @@ export default function Navbar() {
                      onClick={close}
                      className={linkClass("/my-orders")}
                     >My orders</Link>
+
+                     <Link href="/wishlist"
+                      onClick={close}
+                      className={linkClass("/wishlist")}
+                     >Wishlist ({wishlistCount})</Link>
 
                     <Link href="/#contact"
                      onClick={(e) => {

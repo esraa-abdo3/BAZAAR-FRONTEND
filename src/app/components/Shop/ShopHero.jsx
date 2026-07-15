@@ -1,8 +1,8 @@
 import React from 'react';
-import Link from 'next/link';
+
 import { motion } from 'framer-motion';
 
-export default function ShopHero() {
+export default function ShopHero({ onSpinClick }) {
   return (
     <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-[#f8f9fa] mt-[0px]">
     
@@ -30,12 +30,12 @@ export default function ShopHero() {
             Shop the latest trends from our exclusive live bazaars. Trendy pieces. Timeless style. Support local brands and find unique products crafted just for you.
           </p>
           
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
              <button 
                onClick={() => {
                  document.getElementById("shop-main")?.scrollIntoView({ behavior: "smooth" });
                }}
-               className="px-8 py-3 bg-primary text-white font-medium uppercase tracking-wider hover:bg-black hover:text-white transition-all duration-300 rounded-full shadow-lg hover:shadow-xl text-sm"
+               className="px-8 py-3 bg-primary text-white font-medium uppercase tracking-wider hover:bg-black hover:text-white transition-all duration-300 rounded-full shadow-lg hover:shadow-xl text-sm cursor-pointer"
              >
                Shop New In
              </button>
@@ -43,10 +43,11 @@ export default function ShopHero() {
                onClick={() => {
                  document.getElementById("shop-brands")?.scrollIntoView({ behavior: "smooth" });
                }}
-               className="px-8 py-3 bg-transparent border border-white text-white font-medium uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 rounded-full shadow-lg hover:shadow-xl text-sm"
+               className="px-8 py-3 bg-transparent border border-white text-white font-medium uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 rounded-full shadow-lg hover:shadow-xl text-sm cursor-pointer"
              >
                Explore Brands
              </button>
+        
           </div>
         </motion.div>
       </div>

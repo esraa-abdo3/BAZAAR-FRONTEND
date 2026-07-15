@@ -11,6 +11,7 @@ import {
   X,
   Menu,
   Clock,
+  History,
 
   Brain,
 } from "lucide-react";
@@ -42,6 +43,11 @@ const navLinks = [
     label: "Bazaar Control",
     icon: Store,
     href: "/BazaarOwnerDashboard/bazaarcontrol",
+  },
+  {
+    label: "History",
+    icon: History,
+    href: "/BazaarOwnerDashboard/history",
   },
 
   {

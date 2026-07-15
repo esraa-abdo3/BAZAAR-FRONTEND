@@ -1,7 +1,10 @@
+
 // "use client";
 
 // import { useState, useEffect } from "react";
 // import { useRouter } from "next/navigation";
+
+// const ORDERS_PER_PAGE = 6;
 
 // // ── Status badge config ──────────────────────
 // const STATUS_CONFIG = {
@@ -145,6 +148,130 @@
 //   );
 // }
 
+// // ── Pagination Controls ──────────────────────
+// function PaginationControls({ currentPage, totalPages, onPageChange }) {
+//   if (totalPages <= 1) return null;
+
+//   // Build a compact list of page numbers with ellipses for large ranges
+//   const getPageNumbers = () => {
+//     const pages = [];
+//     const maxVisible = 5;
+
+//     if (totalPages <= maxVisible) {
+//       for (let i = 1; i <= totalPages; i++) pages.push(i);
+//       return pages;
+//     }
+
+//     pages.push(1);
+//     if (currentPage > 3) pages.push("...");
+
+//     const start = Math.max(2, currentPage - 1);
+//     const end = Math.min(totalPages - 1, currentPage + 1);
+//     for (let i = start; i <= end; i++) pages.push(i);
+
+//     if (currentPage < totalPages - 2) pages.push("...");
+//     pages.push(totalPages);
+
+//     return pages;
+//   };
+
+//   const pageNumbers = getPageNumbers();
+
+//   const navBtnStyle = (disabled) => ({
+//     display: "flex",
+//     alignItems: "center",
+//     gap: "6px",
+//     background: disabled ? "#f9fafb" : "#fff",
+//     color: disabled ? "#d1d5db" : "#374151",
+//     border: "1.5px solid #e5e7eb",
+//     borderRadius: "10px",
+//     padding: "9px 16px",
+//     fontSize: "13px",
+//     fontWeight: 600,
+//     cursor: disabled ? "not-allowed" : "pointer",
+//     transition: "all 0.15s",
+//   });
+
+//   return (
+//     <div
+//       style={{
+//         display: "flex",
+//         alignItems: "center",
+//         justifyContent: "center",
+//         gap: "8px",
+//         marginTop: "28px",
+//         flexWrap: "wrap",
+//       }}
+//     >
+//       {/* Previous */}
+//       <button
+//         onClick={() => onPageChange(currentPage - 1)}
+//         disabled={currentPage === 1}
+//         style={navBtnStyle(currentPage === 1)}
+//       >
+//         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+//           <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+//         </svg>
+//         Previous
+//       </button>
+
+//       {/* Page numbers */}
+//       <div style={{ display: "flex", gap: "4px" }}>
+//         {pageNumbers.map((p, idx) =>
+//           p === "..." ? (
+//             <span
+//               key={`ellipsis-${idx}`}
+//               style={{
+//                 display: "flex",
+//                 alignItems: "center",
+//                 justifyContent: "center",
+//                 width: "36px",
+//                 height: "36px",
+//                 fontSize: "13px",
+//                 color: "#9ca3af",
+//               }}
+//             >
+//               …
+//             </span>
+//           ) : (
+//             <button
+//               key={p}
+//               onClick={() => onPageChange(p)}
+//               style={{
+//                 width: "36px",
+//                 height: "36px",
+//                 borderRadius: "10px",
+//                 border: "1.5px solid",
+//                 borderColor: p === currentPage ? "#50604A" : "#e5e7eb",
+//                 background: p === currentPage ? "#50604A" : "#fff",
+//                 color: p === currentPage ? "#fff" : "#374151",
+//                 fontSize: "13px",
+//                 fontWeight: 700,
+//                 cursor: "pointer",
+//                 transition: "all 0.15s",
+//               }}
+//             >
+//               {p}
+//             </button>
+//           )
+//         )}
+//       </div>
+
+//       {/* Next */}
+//       <button
+//         onClick={() => onPageChange(currentPage + 1)}
+//         disabled={currentPage === totalPages}
+//         style={navBtnStyle(currentPage === totalPages)}
+//       >
+//         Next
+//         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+//           <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+//         </svg>
+//       </button>
+//     </div>
+//   );
+// }
+
 // // ── Main Page ────────────────────────────────
 // export default function MyOrdersPage() {
 //   const router = useRouter();
@@ -153,6 +280,7 @@
 //   const [error, setError] = useState(null);
 //   const [activeTab, setActiveTab] = useState("all");
 //   const [expandedOrder, setExpandedOrder] = useState(null);
+//   const [currentPage, setCurrentPage] = useState(1);
 
 //   useEffect(() => {
 //     const fetchOrders = async () => {
@@ -289,6 +417,25 @@
 //       ? data.orders
 //       : data.orders.filter((o) => o.status === activeTab);
 
+//   // ── Pagination math ──
+//   const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PER_PAGE));
+//   const safePage = Math.min(currentPage, totalPages);
+//   const startIdx = (safePage - 1) * ORDERS_PER_PAGE;
+//   const paginatedOrders = filteredOrders.slice(startIdx, startIdx + ORDERS_PER_PAGE);
+
+//   const handleTabChange = (tab) => {
+//     setActiveTab(tab);
+//     setCurrentPage(1); // reset to page 1 whenever the filter changes
+//   };
+
+//   const handlePageChange = (page) => {
+//     if (page < 1 || page > totalPages) return;
+//     setCurrentPage(page);
+//     setExpandedOrder(null);
+//     // scroll back to the top of the list for better UX on page change
+//     window.scrollTo({ top: 0, behavior: "smooth" });
+//   };
+
 //   const formatDate = (iso) => {
 //     const d = new Date(iso);
 //     return d.toLocaleDateString("en-EG", {
@@ -383,7 +530,7 @@
 //           return (
 //             <button
 //               key={tab}
-//               onClick={() => setActiveTab(tab)}
+//               onClick={() => handleTabChange(tab)}
 //               style={{
 //                 background: isActive ? "#50604A" : "transparent",
 //                 color: isActive ? "#fff" : "#6b7280",
@@ -419,9 +566,16 @@
 //         })}
 //       </div>
 
+//       {/* ── Results count ── */}
+//       <div style={{ marginBottom: "16px", fontSize: "13px", color: "#9ca3af" }}>
+//         Showing {filteredOrders.length === 0 ? 0 : startIdx + 1}–
+//         {Math.min(startIdx + ORDERS_PER_PAGE, filteredOrders.length)} of{" "}
+//         {filteredOrders.length} order{filteredOrders.length !== 1 ? "s" : ""}
+//       </div>
+
 //       {/* ── Orders List ── */}
 //       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-//         {filteredOrders.length === 0 ? (
+//         {paginatedOrders.length === 0 ? (
 //           <div
 //             style={{
 //               textAlign: "center",
@@ -436,7 +590,7 @@
 //             <p style={{ fontSize: "15px" }}>No orders in this category</p>
 //           </div>
 //         ) : (
-//           filteredOrders.map((order) => {
+//           paginatedOrders.map((order) => {
 //             const isExpanded = expandedOrder === order.orderId;
 //             const cfg = STATUS_CONFIG[order.status] || {};
 //             return (
@@ -653,6 +807,13 @@
 //           })
 //         )}
 //       </div>
+
+//       {/* ── Pagination Controls ── */}
+//       <PaginationControls
+//         currentPage={safePage}
+//         totalPages={totalPages}
+//         onPageChange={handlePageChange}
+//       />
 
 //       {/* ── Brand Breakdown ── */}
 //       {data.byBrand && data.byBrand.length > 0 && (
@@ -912,7 +1073,6 @@ function StatCard({ icon, label, value, sub, gradient }) {
 function PaginationControls({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 
-  // Build a compact list of page numbers with ellipses for large ranges
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
@@ -963,7 +1123,6 @@ function PaginationControls({ currentPage, totalPages, onPageChange }) {
         flexWrap: "wrap",
       }}
     >
-      {/* Previous */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -975,7 +1134,6 @@ function PaginationControls({ currentPage, totalPages, onPageChange }) {
         Previous
       </button>
 
-      {/* Page numbers */}
       <div style={{ display: "flex", gap: "4px" }}>
         {pageNumbers.map((p, idx) =>
           p === "..." ? (
@@ -1017,7 +1175,6 @@ function PaginationControls({ currentPage, totalPages, onPageChange }) {
         )}
       </div>
 
-      {/* Next */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
@@ -1032,12 +1189,55 @@ function PaginationControls({ currentPage, totalPages, onPageChange }) {
   );
 }
 
+// ── Login Required View ──────────────────────
+function LoginRequired({ router }) {
+  return (
+    <div
+      style={{
+        minHeight: "80vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "16px",
+        padding: "20px",
+        textAlign: "center",
+      }}
+    >
+      <div style={{ fontSize: "64px" }}>🔒</div>
+      <h2 style={{ fontSize: "22px", fontWeight: 700, color: "#1a1a1a" }}>
+        Log in to see your orders
+      </h2>
+      <p style={{ color: "#6b7280", maxWidth: "320px" }}>
+        Sign in to your account to track your orders and view your order history.
+      </p>
+      <button
+        onClick={() => router.push("/auth/login")}
+        style={{
+          background: "linear-gradient(135deg,#50604A,#7a9b71)",
+          color: "#fff",
+          border: "none",
+          borderRadius: "14px",
+          padding: "14px 36px",
+          fontWeight: 700,
+          cursor: "pointer",
+          fontSize: "16px",
+          boxShadow: "0 8px 24px rgba(80,96,74,0.3)",
+        }}
+      >
+        Login
+      </button>
+    </div>
+  );
+}
+
 // ── Main Page ────────────────────────────────
 export default function MyOrdersPage() {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [needsLogin, setNeedsLogin] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -1046,13 +1246,22 @@ export default function MyOrdersPage() {
     const fetchOrders = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/auth/login");
+        setNeedsLogin(true);
+        setLoading(false);
         return;
       }
       try {
         const res = await fetch("https://bazary-backend.vercel.app/api/events/my-orders", {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        // Invalid / expired token
+        if (res.status === 401 || res.status === 403) {
+          setNeedsLogin(true);
+          setLoading(false);
+          return;
+        }
+
         const json = await res.json();
         if (!res.ok || json.status !== "success") {
           throw new Error(json.message || "Failed to load orders");
@@ -1065,7 +1274,7 @@ export default function MyOrdersPage() {
       }
     };
     fetchOrders();
-  }, [router]);
+  }, []);
 
   if (loading) {
     return (
@@ -1093,6 +1302,10 @@ export default function MyOrdersPage() {
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
+  }
+
+  if (needsLogin) {
+    return <LoginRequired router={router} />;
   }
 
   if (error) {
@@ -1211,7 +1424,7 @@ export default function MyOrdersPage() {
     <div
       style={{
         maxWidth: "1100px",
-        margin: "0 auto",
+        margin: "20px auto",
         padding: "80px 20px 60px",
         minHeight: "100vh",
       }}

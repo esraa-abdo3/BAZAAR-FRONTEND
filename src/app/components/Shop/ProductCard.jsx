@@ -2,16 +2,20 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { motion } from 'framer-motion';
 import StarRating from '../StarRating';
+import { FiHeart } from 'react-icons/fi';
 
 export default function ProductCard({ product, index = 0 }) {
   const { cart, addToCart, updateCartQuantity, removeFromCart, openLogin, closeLogin } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [isAdding, setIsAdding] = useState(false);
   const brandId = product.brandId?._id || product.brandId;
   const brandName = product.brandName || product.brandId?.brandName;
   const bazaarId = product.bazaarId?._id || product.bazaarId;
 
+  const wishlisted = isInWishlist(product._id);
 
   const productHref = bazaarId && brandId
     ? `/Bazaarprofile/${bazaarId}/brand/${brandId}/product/${product._id}`
@@ -77,18 +81,20 @@ export default function ProductCard({ product, index = 0 }) {
         className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-gray-100"
       >
         
-        <Link href={productHref} className="relative h-64 overflow-hidden block bg-gray-50 flex items-center justify-center">
-          {product.images && product.images.length > 0 ? (
-            <img 
-              src={product.images[0]} 
-              alt={product.name} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-300">
-              <span className="text-sm uppercase tracking-widest font-medium">No Image</span>
-            </div>
-          )}
+        <div className="relative h-64 overflow-hidden bg-gray-50 flex items-center justify-center">
+          <Link href={productHref} className="w-full h-full block">
+            {product.images && product.images.length > 0 ? (
+              <img 
+                src={product.images[0]} 
+                alt={product.name} 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-300">
+                <span className="text-sm uppercase tracking-widest font-medium">No Image</span>
+              </div>
+            )}
+          </Link>
           
           {/* Badges */}
           {product.priceAfterOffer && (
@@ -96,7 +102,27 @@ export default function ProductCard({ product, index = 0 }) {
               Sale
             </div>
           )}
-        </Link>
+
+          {/* Wishlist Heart Button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleWishlist(product, bazaarId);
+            }}
+            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-md backdrop-blur-xs transition-all duration-200 cursor-pointer group/heart hover:scale-110 active:scale-95"
+            title={wishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+          >
+            <FiHeart
+              size={18}
+              className={`transition-colors duration-200 ${
+                wishlisted 
+                  ? "text-red-500 fill-red-500" 
+                  : "text-gray-600 group-hover/heart:text-red-500"
+              }`}
+            />
+          </button>
+        </div>
 
         <div className="p-5 flex flex-col flex-grow">
           <div className="flex justify-between items-start mb-2">

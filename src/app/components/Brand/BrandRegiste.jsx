@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -18,31 +19,17 @@ const STEPS = [
   { id: 2, label: "Brand Details" },
 ];
 
-// ─── Spinner ────────────────────────────────────────────────────────────────
-function Spinner() {
+// Egyptian mobile number: 01 + 9 digits (11 digits total)
+const PHONE_REGEX = /^01\d{9}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Small inline spinner used INSIDE buttons only — never covers page content.
+function ButtonSpinner() {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
-      <div className="relative w-20 h-20">
-        <div className="absolute inset-0 rounded-full border-4 border-[#e8dcc8]" />
-        <div
-          className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#9A5F4C]"
-          style={{ animation: "spin 0.9s linear infinite" }}
-        />
-        <div
-          className="absolute inset-2 rounded-full border-4 border-transparent border-t-[#50604a]"
-          style={{ animation: "spin 1.4s linear infinite reverse" }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-3 h-3 rounded-full bg-[#9A5F4C]" style={{ animation: "pulse 1s ease-in-out infinite" }} />
-        </div>
-      </div>
-      <p className="mt-5 text-sm font-semibold text-[#2c3020] tracking-wide">Submitting Application…</p>
-      <p className="mt-1 text-xs text-gray-400">Please don't close this page</p>
-      <style>{`
-        @keyframes spin  { to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.4; transform:scale(0.7); } }
-      `}</style>
-    </div>
+    <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
   );
 }
 
@@ -63,9 +50,11 @@ export default function BrandRegister() {
     brandName: "", brandCategory: "", brandDescription: "",
     location: "", brandType: "",
     logoUrl: null, logoFile: null,
+    socialMediaLinks: [],
     confirmAccuracy: false,
   });
 
+  const [socialLinkInput, setSocialLinkInput] = useState("");
   const [step,    setStep]    = useState(1);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
@@ -79,14 +68,12 @@ export default function BrandRegister() {
     if (!bazaarId) return;
     async function fetchBazaar() {
       try {
-        // Try upcoming list and filter by ID
         const res  = await fetch(`${BASE_URL}/api/events/upcoming`, { cache: "no-store" });
         const json = await res.json();
         const list = json?.data || json || [];
         const found = Array.isArray(list) ? list.find((b) => b._id === bazaarId) : null;
         if (found) {
           setBazaar(found);
-          // Auto-select brand type if bazaar type is not HYBRID (only one valid option)
           if (found.type && found.type !== "HYBRID") {
             setForm((prev) => ({ ...prev, brandType: found.type }));
           }
@@ -102,12 +89,11 @@ export default function BrandRegister() {
     fetchBazaar();
   }, [bazaarId]);
 
-  // ── allowed brand types based on bazaar type ──
   const allowedTypes = bazaar?.type
     ? bazaar.type === "HYBRID"
-      ? ALL_BRAND_TYPES                           // all three
-      : ALL_BRAND_TYPES.filter((t) => t.value === bazaar.type) // only matching
-    : ALL_BRAND_TYPES;                            // fallback: show all while loading
+      ? ALL_BRAND_TYPES
+      : ALL_BRAND_TYPES.filter((t) => t.value === bazaar.type)
+    : ALL_BRAND_TYPES;
 
   // ── handlers ─────────────────────────────────────────────────────────────
   function handleChange(e) {
@@ -120,6 +106,21 @@ export default function BrandRegister() {
     const file = e.target.files[0];
     if (!file) return;
     setForm((prev) => ({ ...prev, logoFile: file, logoUrl: URL.createObjectURL(file) }));
+    if (errors.logo) setErrors((prev) => ({ ...prev, logo: "" }));
+  }
+
+  function addSocialLink() {
+    const link = socialLinkInput.trim();
+    if (!link) return;
+    setForm((prev) => ({ ...prev, socialMediaLinks: [...prev.socialMediaLinks, link] }));
+    setSocialLinkInput("");
+  }
+
+  function removeSocialLink(index) {
+    setForm((prev) => ({
+      ...prev,
+      socialMediaLinks: prev.socialMediaLinks.filter((_, i) => i !== index),
+    }));
   }
 
   function validateStep(s) {
@@ -127,16 +128,31 @@ export default function BrandRegister() {
     if (s === 1) {
       if (!form.firstName.trim())    newErrors.firstName    = "First name is required";
       if (!form.lastName.trim())     newErrors.lastName     = "Last name is required";
+
       if (!form.email.trim())        newErrors.email        = "Email is required";
-      else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Invalid email";
+      else if (!EMAIL_REGEX.test(form.email)) newErrors.email = "Invalid email address";
+
       if (!form.phone.trim())        newErrors.phone        = "Phone is required";
+      else if (!PHONE_REGEX.test(form.phone))
+        newErrors.phone = "Phone must start with 01 and be 11 digits (e.g. 01222519040)";
+
+      // WhatsApp stays optional, but must be valid if provided
+      if (form.whatsapp.trim() && !PHONE_REGEX.test(form.whatsapp))
+        newErrors.whatsapp = "WhatsApp number must start with 01 and be 11 digits (e.g. 01222519040)";
+
       if (!form.confirmAccuracy)     newErrors.confirmAccuracy = "You must confirm accuracy";
     }
     if (s === 2) {
+      if (!form.logoFile)            newErrors.logo         = "Brand logo is required";
       if (!form.brandName.trim())    newErrors.brandName    = "Brand name is required";
       if (!form.brandType)           newErrors.brandType    = "Select a brand type";
-      if (form.brandDescription && (form.brandDescription.length < 10 || form.brandDescription.length > 600))
+      if (!form.brandCategory.trim()) newErrors.brandCategory = "Brand category is required";
+      if (!form.location.trim())     newErrors.location     = "Location is required";
+
+      if (!form.brandDescription.trim()) newErrors.brandDescription = "Brand description is required";
+      else if (form.brandDescription.length < 10 || form.brandDescription.length > 600)
         newErrors.brandDescription = "Description must be 10–600 characters";
+      // socialMediaLinks stays optional
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -159,6 +175,7 @@ export default function BrandRegister() {
       fd.append("brandDescription", form.brandDescription);
       fd.append("location",         form.location);
       fd.append("brandType",        form.brandType);
+      fd.append("socialMediaLinks", JSON.stringify(form.socialMediaLinks));
       if (form.logoFile) fd.append("logoUrl", form.logoFile);
 
       const res  = await fetch(`${BASE_URL}/api/auth/bazaars/${bazaarId}/brands/register`, {
@@ -178,7 +195,7 @@ export default function BrandRegister() {
     return errors[name] ? <p className="text-red-500 text-xs mt-1">{errors[name]}</p> : null;
   }
 
-  // ── loading state ─────────────────────────────────────────────────────────
+  // ── loading state (initial bazaar fetch — page-level, left as-is) ─────────
   if (bazaarLoading) {
     return (
       <div className="min-h-screen bg-[#F8F6F6] flex items-center justify-center">
@@ -263,7 +280,6 @@ export default function BrandRegister() {
   // ─── FORM ─────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#F8F6F6]">
-      {loading && <Spinner />}
       <div className="max-w-6xl mx-auto px-4 py-10 mt-15">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -344,23 +360,25 @@ export default function BrandRegister() {
                     <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">Phone Number <span className="text-red-400">*</span></label>
                     <div className="flex">
                       <span className="border border-r-0 border-gray-200 rounded-l px-2 py-2 text-xs text-gray-500 bg-gray-100"><FiPhone size={16} /></span>
-                      <input type="tel" name="phone" placeholder="+20 10 0000 0000" value={form.phone} onChange={handleChange}
+                      <input type="tel" name="phone" placeholder="01222519040" maxLength={11} value={form.phone} onChange={handleChange}
                         className="flex-1 border border-gray-200 rounded-r px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50" />
                     </div>
                     <FieldError name="phone" />
                   </div>
 
-              
+                  {/* WhatsApp (optional, validated if filled) */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">WhatsApp Number</label>
+                    <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">
+                      WhatsApp Number <span className="text-gray-400 font-normal">(optional)</span>
+                    </label>
                     <div className="flex">
                       <span className="border border-r-0 border-gray-200 rounded-l px-2 py-2 text-xs text-gray-500 bg-gray-100">💬</span>
-                      <input type="tel" name="whatsapp" placeholder="+20 10 0000 0000" value={form.whatsapp} onChange={handleChange}
+                      <input type="tel" name="whatsapp" placeholder="01222519040" maxLength={11} value={form.whatsapp} onChange={handleChange}
                         className="flex-1 border border-gray-200 rounded-r px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50" />
                     </div>
+                    <FieldError name="whatsapp" />
                   </div>
 
-              
                   <div className="md:col-span-2">
                     <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">Email Address <span className="text-red-400">*</span></label>
                     <input type="email" name="email" placeholder="example@email.com" value={form.email} onChange={handleChange}
@@ -387,7 +405,7 @@ export default function BrandRegister() {
               </div>
             )}
 
-           
+            {/* ── STEP 2 ─────────────────────────────────────────────────── */}
             {step === 2 && (
               <form onSubmit={handleSubmit}>
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -403,8 +421,10 @@ export default function BrandRegister() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
 
                     {/* Logo */}
-                    <div>
-                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-2">Brand Logo</label>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-2">
+                        Brand Logo <span className="text-red-400">*</span>
+                      </label>
                       <div onClick={() => fileInputRef.current?.click()}
                         className="border-2 border-dashed border-gray-300 rounded-lg h-32 flex flex-col items-center justify-center cursor-pointer hover:border-[#4a5a2a] transition-colors bg-gray-50">
                         {form.logoUrl ? (
@@ -421,6 +441,7 @@ export default function BrandRegister() {
                         )}
                       </div>
                       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+                      <FieldError name="logo" />
                     </div>
 
                     {/* Name + Type */}
@@ -436,7 +457,6 @@ export default function BrandRegister() {
                       </label>
 
                       {allowedTypes.length === 1 ? (
-                    
                         <div className="flex items-center gap-2 px-3 py-2 bg-[#f0f4e8] border border-[#c6d4b0] rounded text-sm text-[#2c3020]">
                           <span>{allowedTypes[0].icon}</span>
                           <span className="font-medium">{allowedTypes[0].label}</span>
@@ -444,7 +464,6 @@ export default function BrandRegister() {
                           <span className="ml-auto text-[10px] bg-[#50604a] text-white px-2 py-0.5 rounded-full">Fixed by bazaar</span>
                         </div>
                       ) : (
-                 
                         <div className="flex flex-col gap-2">
                           {allowedTypes.map((t) => (
                             <label key={t.value}
@@ -457,7 +476,6 @@ export default function BrandRegister() {
                                 checked={form.brandType === t.value}
                                 onChange={handleChange}
                                 className="accent-[#50604a]" />
-                             
                               <div>
                                 <p className="text-xs font-semibold text-[#2c3020]">{t.label}</p>
                                 <p className="text-[11px] text-gray-400">{t.desc}</p>
@@ -469,38 +487,85 @@ export default function BrandRegister() {
                       <FieldError name="brandType" />
                     </div>
 
-                  
                     <div>
-                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">Brand Category</label>
+                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">
+                        Brand Category <span className="text-red-400">*</span>
+                      </label>
                       <input type="text" name="brandCategory" placeholder="Eg. ملابس، عطور" value={form.brandCategory} onChange={handleChange}
                         className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50" />
+                      <FieldError name="brandCategory" />
                     </div>
 
-                  
                     <div>
-                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">Location</label>
+                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">
+                        Location <span className="text-red-400">*</span>
+                      </label>
                       <input type="text" name="location" placeholder="Eg. Cairo, Egypt" value={form.location} onChange={handleChange}
                         className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50" />
+                      <FieldError name="location" />
                     </div>
 
                     {/* Description */}
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">Brand Description</label>
+                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">
+                        Brand Description <span className="text-red-400">*</span>
+                      </label>
                       <textarea name="brandDescription" placeholder="Tell us about your brand (10–600 characters)."
                         value={form.brandDescription} onChange={handleChange} rows={3}
                         className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50 resize-none" />
                       <FieldError name="brandDescription" />
                     </div>
+
+                    {/* Social Media Links (optional) */}
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">
+                        Social Media Links <span className="text-gray-400 font-normal">(optional)</span>
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="https://instagram.com/yourbrand"
+                          value={socialLinkInput}
+                          onChange={(e) => setSocialLinkInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addSocialLink();
+                            }
+                          }}
+                          className="flex-1 border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50"
+                        />
+                        <button type="button" onClick={addSocialLink}
+                          className="px-4 py-2 bg-[#50604a] text-white rounded text-sm hover:bg-[#3c4230] transition-colors">
+                          Add
+                        </button>
+                      </div>
+
+                      {form.socialMediaLinks.length > 0 && (
+                        <ul className="mt-3 space-y-2">
+                          {form.socialMediaLinks.map((link, index) => (
+                            <li key={index}
+                              className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded px-3 py-2 text-xs text-[#2c3020]">
+                              <span className="truncate">{link}</span>
+                              <button type="button" onClick={() => removeSocialLink(index)}
+                                className="text-red-400 hover:text-red-600 ml-2 flex-shrink-0">
+                                ✕
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex justify-between mt-6">
-                    <button type="button" onClick={() => setStep(1)}
-                      className="px-6 py-2 border border-gray-300 rounded text-sm text-gray-600 hover:bg-gray-50 hover:scale-[.98] transition-all cursor-pointer">
+                    <button type="button" onClick={() => setStep(1)} disabled={loading}
+                      className="px-6 py-2 border border-gray-300 rounded text-sm text-gray-600 hover:bg-gray-50 hover:scale-[.98] transition-all cursor-pointer disabled:opacity-60">
                       Back
                     </button>
                     <button type="submit" disabled={loading}
                       className="px-6 py-2 bg-[#2c3020] text-white rounded text-sm flex items-center gap-2 hover:bg-[#3c4230] hover:scale-[.98] transition-all cursor-pointer disabled:opacity-60">
-                      {loading ? "Submitting..." : "Submit Application →"}
+                      {loading ? (<><ButtonSpinner />Submitting...</>) : "Submit Application →"}
                     </button>
                   </div>
                 </div>
@@ -508,12 +573,10 @@ export default function BrandRegister() {
             )}
           </div>
 
-      
           <div className="hidden lg:block lg:col-span-1">
             <div className="bg-white rounded-lg border border-gray-200 p-5 sticky top-4">
               <h3 className="text-sm font-bold text-[#2c3020] mb-4">Registration Overview</h3>
 
-           
               <div className="space-y-3">
                 {STEPS.map((s) => (
                   <div key={s.id} className="flex gap-3">
@@ -552,7 +615,6 @@ export default function BrandRegister() {
                 </div>
               )}
 
-        
               <div className="mt-3 p-3 bg-[#f5f0e8] rounded-lg border border-[#e8dcc8]">
                 <p className="text-[11px] font-semibold text-[#2c3020] mb-1">What happens next?</p>
                 <p className="text-[11px] text-gray-600">
@@ -560,7 +622,6 @@ export default function BrandRegister() {
                 </p>
               </div>
 
-          
               <div className="mt-3 p-3 bg-[#f5f0e8] rounded-lg border border-[#e8dcc8]">
                 <p className="text-[11px] font-semibold text-[#2c3020] mb-1">Need help?</p>
                 <p className="text-[11px] text-gray-600 mb-2">For any issues during registration, reach our support team.</p>
