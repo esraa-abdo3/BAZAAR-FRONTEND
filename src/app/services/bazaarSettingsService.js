@@ -17,7 +17,7 @@ settingAxios.interceptors.request.use((config) => {
 
 export async function getBazaarSetting() {
     const res = await settingAxios.get("/setting");
-    console.log(res.data.data.bazaar)
+    console.log("settingg",res.data.data.bazaar)
   return res.data.data.bazaar;
 }
 

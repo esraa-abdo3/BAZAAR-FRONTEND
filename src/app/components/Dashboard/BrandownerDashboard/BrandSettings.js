@@ -105,12 +105,12 @@ export default function BrandSettings() {
     try {
       const fd = new FormData();
       fd.append("brandName", form.brandName);
-      fd.append("description", form.description);
+      fd.append("brandDescription", form.description);
       fd.append("phone", form.phone);
       fd.append("whatsapp", form.whatsapp);
-      fd.append("email", form.email);
-      fd.append("address", form.address);
-      if (form.logo) fd.append("logo", form.logo);
+
+      fd.append("location", form.address);
+      if (form.logo) fd.append("logoUrl", form.logo);
       await axios.patch(`${BASE_URL}/brand`, fd, { headers: getHeaders() });
       setSuccess(true);
     } catch (err) {
@@ -121,27 +121,23 @@ export default function BrandSettings() {
   }
 
   const inputClass =
-    "w-full border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-stone-800 bg-white focus:outline-none focus:border-[#3d4f38] transition-colors placeholder:text-stone-300";
-  const labelClass = "block text-xs font-medium text-stone-500 mb-1.5";
+    "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 bg-white focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-gray-300";
+  const labelClass = "block text-xs font-medium text-gray-500 mb-1.5";
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div
-          className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor: "#50604A", borderTopColor: "transparent" }}
-        />
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <div className="w-6 h-6 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl m-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="w-full max-w-2xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900">Settings</h1>
-          <p className="text-xs text-stone-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Settings</h1>
+          <p className="text-xs text-gray-400 mt-1">
             Curate your brand&apos;s digital presence and core identity.
           </p>
         </div>
@@ -149,7 +145,7 @@ export default function BrandSettings() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#3d4f38] text-white text-xs font-semibold rounded-lg hover:bg-[#22301D] transition-colors disabled:opacity-60"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-60"
           >
             {saving ? (
               <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -181,7 +177,7 @@ export default function BrandSettings() {
                 logo: null,
               })
             }
-            className="px-4 py-2 border border-stone-200 text-xs font-semibold text-stone-600 rounded-lg hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 border border-gray-200 text-xs font-semibold text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Discard
           </button>
@@ -210,13 +206,13 @@ export default function BrandSettings() {
       )}
 
       {/* Brand Identity */}
-      <div className="bg-white rounded-xl border border-stone-200 p-6 mb-4">
+      <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 mb-4 shadow-sm">
         <h2 className="text-sm font-semibold text-stone-800 mb-5">
           Brand Identity
         </h2>
 
         {/* Logo + Name row */}
-        <div className="flex items-start gap-5 mb-5">
+        <div className="flex flex-col sm:flex-row items-start gap-5 mb-5">
           {/* Logo */}
           <div
             onClick={() => logoRef.current?.click()}
@@ -275,7 +271,7 @@ export default function BrandSettings() {
                   type="button"
                   onClick={handleSuggestDescription}
                   disabled={suggesting}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-[#3d4f38] hover:text-[#22301D] transition-colors disabled:opacity-60"
+                  className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 transition-colors disabled:opacity-60"
                 >
                   {suggesting ? (
                     <div className="w-3 h-3 border-2 border-[#3d4f38] border-t-transparent rounded-full animate-spin" />
@@ -317,11 +313,11 @@ export default function BrandSettings() {
       </div>
 
       {/* Contact Info */}
-      <div className="bg-white rounded-xl border border-stone-200 p-6 mb-4">
+      <div className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 mb-4 shadow-sm">
         <h2 className="text-sm font-semibold text-stone-800 mb-5">
           Contact Info
         </h2>
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClass}>Phone Number</label>
             <div className="relative">

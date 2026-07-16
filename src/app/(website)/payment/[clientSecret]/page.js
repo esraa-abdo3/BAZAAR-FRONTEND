@@ -96,7 +96,7 @@ export default function PaymentPage() {
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-[90%] m-auto">
 
         {/* Header */}
         <div className="text-center mb-8">

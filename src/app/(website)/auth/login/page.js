@@ -48,7 +48,7 @@ export default function Login() {
   }
 
   return (
-    <section className="w-full mt-10 flex items-start md:items-center justify-center p-8">
+    <section className="w-full mt-25 flex items-start md:items-center justify-center p-8">
       <div className="bg-white rounded-2xl border border-stone-200 p-10 w-full max-w-md">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-medium mb-1">Welcome Back</h2>
@@ -126,12 +126,7 @@ export default function Login() {
             )}
           </button>
 
-          <div className="text-center">
-            <p className="text-xs text-stone-400 mb-3">Or continue with</p>
-            <button className="w-full py-2.5 border border-stone-200 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-stone-50 hover:scale-[.98] transition-all cursor-pointer">
-              Continue with Google
-            </button>
-          </div>
+
 
           <p className="text-center text-sm text-stone-500">
             Don&apos;t have an account?{" "}

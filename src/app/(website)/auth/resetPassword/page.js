@@ -157,7 +157,7 @@
  "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { resetPassword } from "@/app/services/authService";
 
@@ -173,14 +173,21 @@ export default function ResetPassword() {
   const [error, setError] = useState({});
   const [success, setSuccess] = useState(false);
 
+  // The email was already collected on the Forgot Password step — reuse it
+  // here instead of asking the person to type it again.
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    } else {
+      router.push("/auth/forgetPassword");
+    }
+  }, [router]);
+
   async function handleSubmit(e) {
     e.preventDefault();
 
     const errors = {};
-
-    if (!email.trim()) {
-      errors.email = "Email is required";
-    }
 
     if (!otp.trim()) {
       errors.otp = "OTP is required";
@@ -212,6 +219,7 @@ export default function ResetPassword() {
       });
 
       setSuccess(true);
+      localStorage.removeItem("email");
 
       setTimeout(() => {
         router.push("/auth/login");
@@ -229,36 +237,22 @@ export default function ResetPassword() {
   }
 
   return (
-    <section className="w-full mt-10 flex items-start md:items-center justify-center p-8">
+    <section className="w-full mt-10 flex items-start md:items-center justify-center p-8 mt-20">
       <div className="bg-white rounded-2xl border border-stone-200 p-10 w-full max-w-md">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-medium mb-1">Reset Password</h2>
           <p className="text-sm text-stone-400">
-            Enter your email, OTP, and new password.
+            Enter the OTP we sent you and choose a new password.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {/* Email */}
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-widest text-stone-400 mb-2">
-              Email
-            </label>
-
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@email.com"
-              className={`w-full border-0 border-b ${
-                error.email ? "border-red-500" : "border-stone-300"
-              } p-2 rounded-sm bg-transparent text-sm focus:outline-none focus:border-stone-600`}
-            />
-
-            {error.email && (
-              <p className="text-red-500 text-xs mt-1">{error.email}</p>
-            )}
-          </div>
+          {/* Email (read-only, carried over from the Forgot Password step) */}
+          {email && (
+            <p className="text-center text-xs text-stone-500">
+              Resetting password for <span className="font-medium text-stone-700">{email}</span>
+            </p>
+          )}
 
           {/* OTP */}
           <div>

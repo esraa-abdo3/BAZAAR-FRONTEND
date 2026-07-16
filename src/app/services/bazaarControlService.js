@@ -18,7 +18,7 @@ controlAxios.interceptors.request.use((config) => {
 
 export async function getBazaarControl() {
   const res = await controlAxios.get("/control");
-  console.log(res.data.data.bazaar)
+  console.log("bazaar control",res.data.data.bazaar)
   return res.data.data.bazaar;
 }
 
@@ -27,8 +27,10 @@ export async function toggleRegistration(isAcceptingBrands) {
   const res = await controlAxios.patch("/control/toggle", {
      
     isAcceptingBrands,
+
   }
   );
+  console.log("toogle",res)
   return res.data.data;
 }
 

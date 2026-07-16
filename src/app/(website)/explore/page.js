@@ -4,6 +4,7 @@ import ExploreLiveBazaars from "@/app/components/Explore/ExploreLiveBazaars";
 import ExploreUpcoming from "@/app/components/Explore/ExploreUpcoming";
 import TopProducts from "@/app/components/Explore/TopProducts";
 import CustomerReviews from "@/app/components/Explore/CustomerReviews";
+import JoinUsCTA from "@/app/components/Explore/JoinUsCTA";
 
 export const metadata = {
   title: "Explore Bazaars | Bazaar — Discover Amazing Deals",
@@ -53,6 +54,7 @@ export default async function ExplorePage() {
 
       {/* 3. Live Bazaars — existing component, UI-only wrapper */}
       <ExploreLiveBazaars livebazars={livebazars} />
+      <JoinUsCTA/>
 
       {/* 3b. Upcoming Bazaars — existing component, UI-only wrapper */}
       <ExploreUpcoming upcoming={upcomingbazaars} />

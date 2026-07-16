@@ -17,7 +17,7 @@ export default function ExploreUpcoming({ upcoming }) {
             className="text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full"
             style={{ background: "rgba(80,96,74,0.12)", color: "#50604A" }}
           >
-            📅 Coming Soon
+             Coming Soon
           </span>
           {count > 0 && (
             <span className="text-sm text-gray-400 font-medium">

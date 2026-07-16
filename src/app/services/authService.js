@@ -16,23 +16,38 @@ export async function registerCustomer({ fullName, email, password }) {
 
 export async function login({ email, password, router }) {
   const res = await authAxios.post("/login", { email, password });
-  console.log(res)
+  console.log('Login response:', res);
 
-  const token = res.data?.data?.accessToken;
-  const role = res.data?.data?.user?.role;
+  // Extract token from possible response structures
+  const token =
+    res.data?.accessToken ||
+    res.data?.token ||
+    res.data?.data?.accessToken ||
+    res.data?.data?.token ||
+    null;
+  console.log('Extracted token:', token);
 
   if (token) {
-    localStorage.setItem("token", token);
+    localStorage.setItem('token', token);
+  } else {
+    console.warn('No token found in login response');
   }
 
-  localStorage.setItem("user", JSON.stringify(res.data.data.user));
+  const user = res.data?.user || res.data?.data?.user || {};
+  const role = user.role;
+
+  if (user && Object.keys(user).length > 0) {
+    localStorage.setItem("user", JSON.stringify(user));
+  }
 
   if (role === "CUSTOMER") {
-    router.push("/");
+    router.push("/explore");
   } else if (role === "BRAND_OWNER") {
     router.push("/BrandOwnerDashboard");
   } else if (role === "BAZAAR_OWNER") {
     router.push("/BazaarOwnerDashboard");
+  } else if (role === "ADMIN") {
+    router.push("/AdminDashboard");
   }
 
   return res.data;

@@ -5,8 +5,8 @@ const BASE_URL = "https://bazary-backend.vercel.app/api";
 const brandAxios = axios.create({ baseURL: BASE_URL });
 
 brandAxios.interceptors.request.use((config) => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  console.log('brandAxios token:', token);
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -39,7 +39,12 @@ export async function updateBrandProfile(data) {
 // ── DASHBOARD STATS ───────────────────────────────────────────────────────────
 // GET /brand/dashboard
 export async function getBrandDashboard() {
-  const res = await brandAxios.get("/brand/dashboard");
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  console.log('getBrandDashboard token:', token);
+  console.log('Requesting /brand/dashboard');
+  const res = await brandAxios.get("/brand/dashboard", {
+    headers: { Authorization: token ? `Bearer ${token}` : undefined },
+  });
   return res.data;
 }
 

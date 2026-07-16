@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckCircle, XCircle, Loader2, ArrowRight, Mail } from "lucide-react";
 
 const stripePromise = loadStripe("pk_test_51Tfg0qF3X8TkLn5begaNuyALoqNR9MBt85CJHMNdL1W48L5WgXjyBiIustCAtPzttXC6t5qJtHJg0qmcxe13OIxS00WqKYLYpQ");
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState("loading"); 
@@ -113,3 +113,21 @@ export default function PaymentSuccessPage() {
     </div>
   );
 }
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#f7f5f0]">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 size={32} className="animate-spin text-[#9A5F4C]" />
+            <p className="text-sm text-gray-500">Loading…</p>
+          </div>
+        </div>
+      }
+    >
+      <PaymentSuccessContent />
+    </Suspense>
+  );
+}
+

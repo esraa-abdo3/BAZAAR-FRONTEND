@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,6 +11,7 @@ import DashboardHeader from "../../../components/Dashboard/BazarownerDashboard/D
 import {
   getWaitingList, approveWaitingEntry, rejectWaitingEntry,
 } from "../../../services/Bazaarwaitingservice.js";
+import { getBazaarSetting } from "../../../services/bazaarSettingsService";
 
 const TYPE_META = {
   ONLINE:  { label: "Online",  bg: "bg-indigo-50",  text: "text-indigo-600" },
@@ -52,6 +54,7 @@ function RejectConfirm({ brandName, loading, onConfirm, onCancel }) {
 }
 
 function BrandRow({ entry, onApprove, onReject, rowState }) {
+
   const type = TYPE_META[entry.brandType] ?? { label: entry.brandType, bg: "bg-gray-50", text: "text-gray-500" };
   const isBusy = rowState === "approving" || rowState === "rejecting";
 
@@ -132,6 +135,65 @@ function BrandRow({ entry, onApprove, onReject, rowState }) {
   );
 }
 
+function ApprovedBrandRow({ entry }) {
+  const type = TYPE_META[entry.brandType] ?? { label: entry.brandType, bg: "bg-gray-50", text: "text-gray-500" };
+
+  return (
+    <tr className="border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition-colors">
+      <td className="py-3.5 pl-5 pr-3">
+        <div className="flex items-center gap-3 min-w-0">
+          {entry.logoUrl ? (
+            <img src={entry.logoUrl} alt={entry.brandName}
+              className="w-10 h-10 rounded-xl object-cover border border-gray-100 flex-shrink-0" />
+          ) : (
+            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+              <StoreIcon size={15} className="text-gray-400" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-gray-800 truncate">{entry.brandName}</p>
+            <p className="text-xs text-gray-400 truncate flex items-center gap-1">
+              <Tag size={10} /> {entry.brandCategory}
+            </p>
+          </div>
+        </div>
+      </td>
+
+      <td className="py-3.5 px-3">
+        <p className="text-sm text-gray-700">{entry.firstName} {entry.lastName}</p>
+        <p className="text-xs text-gray-400 flex items-center gap-1 truncate max-w-[180px]">
+          <Mail size={10} className="flex-shrink-0" /> {entry.email}
+        </p>
+        <p className="text-xs text-gray-400 flex items-center gap-1">
+          <Phone size={10} /> {entry.phone}
+        </p>
+      </td>
+
+      <td className="py-3.5 px-3">
+        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold ${type.bg} ${type.text}`}>
+          <Globe size={10} /> {type.label}
+        </span>
+      </td>
+
+      <td className="py-3.5 px-3">
+        <span className="text-xs text-gray-600 flex items-center gap-1">
+          <MapPin size={11} className="text-gray-400" /> {entry.location}
+        </span>
+      </td>
+
+      <td className="py-3.5 px-3">
+        <span className="text-xs text-gray-500">{formatDate(entry.createdAt)}</span>
+      </td>
+
+      <td className="py-3.5 pl-3 pr-5 text-right">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-semibold">
+          <CheckCircle size={12} /> Approved
+        </span>
+      </td>
+    </tr>
+  );
+}
+
 function TableSkeleton() {
   return (
     <tbody>
@@ -151,6 +213,7 @@ export default function WaitingListPage() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bazaarStatus, setBazaarStatus] = useState(null);
   const [rowStates, setRowStates] = useState({}); // { [id]: "approving" | "rejecting" }
   const [rejectTarget, setRejectTarget] = useState(null);
   const [toast, setToast] = useState(null);
@@ -159,9 +222,12 @@ export default function WaitingListPage() {
     setLoading(true);
     setError(null);
     try {
-      const list = await getWaitingList();
-      console.log("list waiting", list)
-      setEntries(list.filter((e) => e.status === "PENDING"));
+      const [list, bazaar] = await Promise.all([
+        getWaitingList(),
+        getBazaarSetting().catch(() => null),
+      ]);
+      setEntries(list);
+      setBazaarStatus(bazaar?.status ?? null);
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || "Failed to load waiting list.");
     } finally {
@@ -171,6 +237,10 @@ export default function WaitingListPage() {
 
   useEffect(() => { load(); }, []);
 
+  const pendingEntries = entries.filter((e) => e.status === "PENDING");
+  const approvedEntries = entries.filter((e) => e.status === "APPROVED");
+  const showApprovedSection = bazaarStatus === "UPCOMING";
+  console.log("approvedEntries", approvedEntries)
   const showToast = (message, kind = "success") => {
     setToast({ message, kind });
     setTimeout(() => setToast(null), 3000);
@@ -180,7 +250,9 @@ export default function WaitingListPage() {
     setRowStates((prev) => ({ ...prev, [entry._id]: "approving" }));
     try {
       await approveWaitingEntry(entry._id);
-      setEntries((prev) => prev.filter((e) => e._id !== entry._id));
+      setEntries((prev) =>
+        prev.map((e) => (e._id === entry._id ? { ...e, status: "APPROVED" } : e))
+      );
       showToast(`${entry.brandName} approved — payment link sent.`, "success");
     } catch (err) {
       showToast(err?.response?.data?.message || err?.message || "Couldn't approve this brand.", "error");
@@ -250,9 +322,9 @@ export default function WaitingListPage() {
               </div>
             </div>
 
-            {!loading && entries.length > 0 && (
+            {!loading && pendingEntries.length > 0 && (
               <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 text-red-500 text-xs font-semibold">
-                <Clock size={12} /> {entries.length} pending
+                <Clock size={12} /> {pendingEntries.length} pending
               </span>
             )}
           </div>
@@ -285,7 +357,7 @@ export default function WaitingListPage() {
                   <TableSkeleton />
                 ) : (
                   <tbody>
-                    {entries.map((entry) => (
+                    {pendingEntries.map((entry) => (
                       <BrandRow
                         key={entry._id}
                         entry={entry}
@@ -299,7 +371,7 @@ export default function WaitingListPage() {
               </table>
             </div>
 
-            {!loading && entries.length === 0 && (
+            {!loading && pendingEntries.length === 0 && (
               <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
                 <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
                   <Clock size={20} className="text-gray-300" />
@@ -309,6 +381,58 @@ export default function WaitingListPage() {
               </div>
             )}
           </div>
+
+          {showApprovedSection && !loading && (
+            <div className="mt-6">
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-800">Approved Brands</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Confirmed vendors for your upcoming bazaar
+                  </p>
+                </div>
+                {approvedEntries.length > 0 && (
+                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 text-xs font-semibold">
+                    <CheckCircle size={12} /> {approvedEntries.length} approved
+                  </span>
+                )}
+              </div>
+
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[760px]">
+                    <thead>
+                      <tr className="border-b border-gray-100 bg-gray-50/60">
+                        <th className="py-3 pl-5 pr-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Brand</th>
+                        <th className="py-3 px-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Owner</th>
+                        <th className="py-3 px-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Type</th>
+                        <th className="py-3 px-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Location</th>
+                        <th className="py-3 px-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Applied</th>
+                        <th className="py-3 pl-3 pr-5 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {approvedEntries.map((entry) => (
+                        <ApprovedBrandRow key={entry._id} entry={entry} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {approvedEntries.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-14 px-4 text-center">
+                    <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                      <CheckCircle size={20} className="text-gray-300" />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-700">No approved brands yet</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Brands you approve above will appear here.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </>

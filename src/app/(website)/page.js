@@ -11,6 +11,9 @@ import SpecialOffers from "../components/Landing/SpecialOffers";
 import AIFeatures from "../components/Landing/AIFeatures";
 import FinalCTA from "../components/Landing/FinalCTA";
 
+
+
+
 async function getlivebazar() {
   const res = await fetch(
     "https://bazary-backend.vercel.app/api/events/live",
@@ -44,10 +47,11 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans w-full">
+      
       <HeroSection stats={{ bazaars: liveCount || 24 }} />
       <WhoAreWe />
       <WhyBazaarsMatter />
-     
+    
       <HowEveryoneBenefits />
          <AIFeatures />
       <OurStory />

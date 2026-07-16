@@ -45,7 +45,7 @@ console.log(form)
       await registerCustomer(form);
       // Save email for OTP verification
       localStorage.setItem("email", form.email);
-      router.push("/");
+      router.push("/explore");
     } catch (err) {
       setError({
         server:
@@ -59,7 +59,7 @@ console.log(form)
   }
 
   return (
-    <section className="min-h-screen w-full bg-stone-50 flex items-start md:items-center justify-center p-8">
+    <section className="min-h-screen w-full bg-stone-50 flex items-start md:items-center justify-center p-8 mt-10">
       <div className="bg-white rounded-2xl border border-stone-200 p-10 w-full max-w-md">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-medium mb-1">Create Account</h2>
@@ -146,12 +146,7 @@ console.log(form)
             )}
           </button>
 
-          <div className="text-center">
-            <p className="text-xs text-stone-400 mb-3">Or continue with</p>
-            <button className="w-full py-2.5 border border-stone-200 rounded-lg text-sm flex items-center justify-center gap-2 hover:bg-stone-50 hover:scale-[.98] transition-all cursor-pointer">
-              Continue with Google
-            </button>
-          </div>
+
 
           <p className="text-center text-sm text-stone-500">
             Already have an account?{" "}
