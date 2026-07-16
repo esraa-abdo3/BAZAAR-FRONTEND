@@ -1,4 +1,3 @@
-
 // "use client";
 
 // import { useState, useRef } from "react";
@@ -1029,6 +1028,9 @@ export default function Bazaradd() {
     startDate: "",
     endDate: "",
     packageId: "",
+    priceOnline: "",
+    priceOffline: "",
+    priceHybrid: "",
     paymentMethod: "card",
     confirmAccuracy: false,
   });
@@ -1124,6 +1126,18 @@ export default function Bazaradd() {
 
     if (s === 3) {
       if (!form.packageId) newErrors.packageId = "Please select a package";
+      else {
+        const selectedPkg = PACKAGES.find((p) => p.id === form.packageId);
+        if (selectedPkg?.type === "HYBRID") {
+          if (!form.priceOnline) newErrors.priceOnline = "Online price is required";
+          if (!form.priceOffline) newErrors.priceOffline = "Offline price is required";
+          if (!form.priceHybrid) newErrors.priceHybrid = "Hybrid price is required";
+        } else if (selectedPkg?.type === "ONLINE") {
+          if (!form.priceOnline) newErrors.priceOnline = "Online price is required";
+        } else if (selectedPkg?.type === "OFFLINE") {
+          if (!form.priceOffline) newErrors.priceOffline = "Offline price is required";
+        }
+      }
     }
 
     setErrors(newErrors);
@@ -1152,6 +1166,17 @@ export default function Bazaradd() {
       formData.append("startDate", form.startDate);
       formData.append("endDate", form.endDate);
       formData.append("paymentMethod", form.paymentMethod);
+
+      const selectedPkg = PACKAGES.find((p) => p.id === form.packageId);
+      if (selectedPkg?.type === "HYBRID") {
+        formData.append("priceOnline", form.priceOnline);
+        formData.append("priceOffline", form.priceOffline);
+        formData.append("priceHybrid", form.priceHybrid);
+      } else if (selectedPkg?.type === "ONLINE") {
+        formData.append("priceOnline", form.priceOnline);
+      } else if (selectedPkg?.type === "OFFLINE") {
+        formData.append("priceOffline", form.priceOffline);
+      }
 
       if (form.logoFile) formData.append("logoUrl", form.logoFile);
       if (form.backgroundImageFile) formData.append("backgroundImage", form.backgroundImageFile);
@@ -1655,6 +1680,76 @@ export default function Bazaradd() {
                         </div>
                         <FieldError name="packageId" />
                       </div>
+
+                      {form.packageId && (() => {
+                        const selectedPkg = PACKAGES.find((p) => p.id === form.packageId);
+                        if (!selectedPkg) return null;
+                        return (
+                          <div>
+                            <label className="block text-xs font-semibold text-[#5A5C5C] mb-1">
+                              Brand Participation Price <span className="text-red-400">*</span>
+                            </label>
+                            <p className="text-[11px] text-gray-500 mb-3">
+                              This is what brands will pay to join your bazaar.
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                              {(selectedPkg.type === "ONLINE" || selectedPkg.type === "HYBRID") && (
+                                <div>
+                                  <label className="block text-[11px] font-semibold text-[#5A5C5C] mb-1">
+                                    Online Price (EGP)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    name="priceOnline"
+                                    placeholder="Eg. 500"
+                                    value={form.priceOnline}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50"
+                                  />
+                                  <FieldError name="priceOnline" />
+                                </div>
+                              )}
+
+                              {(selectedPkg.type === "OFFLINE" || selectedPkg.type === "HYBRID") && (
+                                <div>
+                                  <label className="block text-[11px] font-semibold text-[#5A5C5C] mb-1">
+                                    Offline Price (EGP)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    name="priceOffline"
+                                    placeholder="Eg. 500"
+                                    value={form.priceOffline}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50"
+                                  />
+                                  <FieldError name="priceOffline" />
+                                </div>
+                              )}
+
+                              {selectedPkg.type === "HYBRID" && (
+                                <div>
+                                  <label className="block text-[11px] font-semibold text-[#5A5C5C] mb-1">
+                                    Hybrid Price (EGP)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    name="priceHybrid"
+                                    placeholder="Eg. 800"
+                                    value={form.priceHybrid}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#4a5a2a] bg-gray-50"
+                                  />
+                                  <FieldError name="priceHybrid" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       <div>
                         <label className="block text-xs font-semibold text-gray-700 mb-2">

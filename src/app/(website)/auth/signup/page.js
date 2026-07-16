@@ -45,7 +45,7 @@ console.log(form)
       await registerCustomer(form);
       // Save email for OTP verification
       localStorage.setItem("email", form.email);
-      router.push("/");
+      router.push("/explore");
     } catch (err) {
       setError({
         server:

@@ -41,11 +41,13 @@ export async function login({ email, password, router }) {
   }
 
   if (role === "CUSTOMER") {
-    router.push("/");
+    router.push("/explore");
   } else if (role === "BRAND_OWNER") {
     router.push("/BrandOwnerDashboard");
   } else if (role === "BAZAAR_OWNER") {
     router.push("/BazaarOwnerDashboard");
+  } else if (role === "ADMIN") {
+    router.push("/AdminDashboard");
   }
 
   return res.data;
