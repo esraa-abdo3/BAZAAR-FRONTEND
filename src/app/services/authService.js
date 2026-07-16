@@ -7,13 +7,13 @@ const authAxios = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Register customer
+
 export async function registerCustomer({ fullName, email, password }) {
   const res = await authAxios.post("/register/customer", { fullName, email, password });
   return res.data;
 }
 
-// Login
+
 export async function login({ email, password, router }) {
   const res = await authAxios.post("/login", { email, password });
   console.log(res)
@@ -37,7 +37,7 @@ export async function login({ email, password, router }) {
 
   return res.data;
 }
-// Logout
+
 export async function logout() {
   const token = localStorage.getItem("token");
   const res = await authAxios.post(
@@ -50,15 +50,15 @@ export async function logout() {
   return res.data;
 }
 
-// Forget Password
+
 export async function forgetPassword({ email }) {
   const res = await authAxios.post("/forgotPassword", { email });
   console.log(res)
   return res.data;
 }
 
-// Reset Password
-export async function resetPassword({ token, password }) {
-  const res = await authAxios.post(`/resetPassword`, { token, password });
+
+export async function resetPassword({email,otp, password}) {
+  const res = await authAxios.post(`/resetPassword`, { email,otp, password});
   return res.data;
 }
