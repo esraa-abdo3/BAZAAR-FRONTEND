@@ -144,7 +144,7 @@ export default function BrandSidebar({
               className="flex items-center gap-3 px-3 py-2.5 mt-4 rounded-lg text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors w-full"
             >
               <ExternalLink size={16} />
-              زيارة صفحة البراند
+        go to brand page
             </a>
           )}
         </div>

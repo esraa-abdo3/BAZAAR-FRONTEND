@@ -3,88 +3,37 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import {
+  LayoutDashboard,
+  Store,
+  Shield,
+  Users,
+  Package,
+  ClipboardList,
+  Settings,
+  User,
+  X,
+  Menu,
+  LogOut,
+} from "lucide-react";
 
 const navLinks = [
-  {
-    label: "Overview",
-    tab: "overview",
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-  },
-  {
-    label: "Bazaars",
-    tab: "bazaars",
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </svg>
-    ),
-  },
-  {
-    label: "Brands",
-    tab: "brands",
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
-  },
-  {
-    label: "Users",
-    tab: "users",
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 00-3-3.87" />
-        <path d="M16 3.13a4 4 0 010 7.75" />
-      </svg>
-    ),
-  },
-  {
-    label: "Products",
-    tab: "products",
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <path d="M16 10a4 4 0 01-8 0" />
-      </svg>
-    ),
-  },
-  {
-    label: "Orders",
-    tab: "orders",
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path d="M9 11l3 3L22 4" />
-        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-      </svg>
-    ),
-  },
-  {
-    label: "Settings",
-    tab: "settings",
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-      </svg>
-    ),
-  },
+  { label: "Overview", tab: "overview", icon: LayoutDashboard },
+  { label: "Bazaars", tab: "bazaars", icon: Store },
+  { label: "Brands", tab: "brands", icon: Shield },
+  { label: "Users", tab: "users", icon: Users },
+  { label: "Products", tab: "products", icon: Package },
+  { label: "Orders", tab: "orders", icon: ClipboardList },
+  { label: "Settings", tab: "settings", icon: Settings },
 ];
 
+
 export default function AdminSidebar({ activePage, setActivePage }) {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
   const [adminName, setAdminName] = useState("Admin");
 
+  const NEXT_PUBLIC_WEBSITE_URL="http://localhost:3000"
   useEffect(() => {
     const loadUser = () => {
       if (typeof window !== "undefined") {
@@ -104,80 +53,133 @@ export default function AdminSidebar({ activePage, setActivePage }) {
     return () => window.removeEventListener("userUpdate", loadUser);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "https://bazary-backend.vercel.app/api/auth/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.log("logout error:", error);
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      router.push("/auth/login");
-    }
-  };
+const handleGoToWebsite = () => {
+  window.open(NEXT_PUBLIC_WEBSITE_URL, "_blank");
+}
+const handleLogout = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      "https://bazary-backend.vercel.app/api/auth/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (error) {
+    console.log("logout error:", error);
+  } finally {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/auth/login");
+  }
+};
+  function navigate(tab) {
+    setActivePage(tab);
+    setOpen(false);
+  }
+
 
   return (
-    <aside className="w-[140px] min-h-screen bg-white border-r border-stone-200 flex flex-col justify-between py-6 px-2 shrink-0">
-      <div>
-        {/* Logo / Brand */}
-        <div className="px-2 mb-6 flex flex-col items-center gap-1">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: "#3d4f38" }}
-          >
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2}>
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-50 w-9 h-9 flex items-center justify-center bg-white border border-gray-200 rounded-lg shadow-sm"
+        aria-label="Open sidebar"
+      >
+        <Menu size={18} className="text-gray-600" />
+      </button>
+
+      {open && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/40 z-40"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`
+          fixed top-0 left-0 h-full w-[220px]
+          bg-white border-r border-gray-100
+          flex flex-col justify-between
+          py-6 px-3
+          z-50
+          transition-transform duration-300 ease-in-out
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+        `}
+      >
+        <div>
+          <div className="flex items-center justify-between px-3 mb-8">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <LayoutDashboard size={15} className="text-white" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-gray-800 leading-none truncate">
+                  Super Admin
+                </p>
+                <p className="text-[10px] text-gray-400">Platform Management</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="lg:hidden text-gray-400 hover:text-gray-600 flex-shrink-0"
+              aria-label="Close sidebar"
+            >
+              <X size={16} />
+            </button>
           </div>
-          <p className="text-[10px] font-semibold text-stone-700 text-center leading-tight">Super Admin</p>
+
+          <nav className="flex flex-col gap-1">
+            {navLinks.map(({ label, icon: Icon, tab }) => (
+              <button
+                key={label}
+                onClick={() => navigate(tab)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors w-full text-left ${
+                  activePage === tab
+                    ? "bg-indigo-50 text-indigo-600"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                }`}
+              >
+                <Icon size={16} />
+                {label}
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex flex-col gap-0.5">
-          {navLinks.map(({ label, icon, tab }) => (
-            <button
-              key={label}
-              onClick={() => setActivePage(tab)}
-              className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-lg text-[10px] font-semibold transition-colors w-full cursor-pointer ${
-                activePage === tab
-                  ? "bg-[#3d4f38] text-white"
-                  : "text-stone-500 hover:bg-stone-100"
-              }`}
-            >
-              {icon}
-              {label}
-            </button>
-          ))}
-        </nav>
-      </div>
+   <div className="flex gap-2 px-3 pt-4 border-t border-gray-100">
+  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+    <User size={15} className="text-amber-700" />
+  </div>
 
-      {/* Footer — admin name + logout */}
-      <div className="border-t border-stone-200 pt-3 px-1">
-        <p className="text-[10px] font-semibold text-stone-700 truncate text-center mb-2">
-          {adminName}
-        </p>
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-semibold bg-red-500 text-white hover:bg-red-600 transition-colors cursor-pointer"
-        >
-          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          Logout
-        </button>
-      </div>
-    </aside>
+  <div className="min-w-0">
+    <p className="text-xs font-semibold text-gray-800 truncate">
+      {adminName}
+    </p>
+
+    <button
+      onClick={handleGoToWebsite}
+      className="flex items-center gap-1 mt-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer transition"
+    >
+      <Store size={10} />
+      Go to Website
+    </button>
+
+    <button
+      onClick={handleLogout}
+      className="flex items-center gap-0.5 mt-1 text-xs font-medium text-red-500 cursor-pointer transition w-full"
+    >
+      <LogOut size={10} />
+      Logout
+    </button>
+  </div>
+</div>
+      </aside>
+    </>
   );
 }

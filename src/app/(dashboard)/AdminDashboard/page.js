@@ -46,17 +46,13 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f5f5f0]">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-gray-50 lg:ml-[220px]">
       <AdminSidebar activePage={activePage} setActivePage={setActivePage} />
 
-      {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Sticky header */}
         <AdminHeader title={pageTitles[activePage] || "Admin Dashboard"} />
 
-        {/* Page content */}
-        <main className="flex-1 overflow-auto p-8">
+        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           {renderPage()}
         </main>
       </div>

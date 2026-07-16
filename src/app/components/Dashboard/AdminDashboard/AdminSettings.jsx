@@ -143,9 +143,9 @@ export default function AdminSettings() {
       <div className="flex flex-col items-center justify-center py-32 gap-3">
         <div
           className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
-          style={{ borderColor: "#3d4f38", borderTopColor: "transparent" }}
+          style={{ borderColor: "#4f46e5", borderTopColor: "transparent" }}
         />
-        <p className="text-xs text-stone-400">Loading profile settings...</p>
+        <p className="text-xs text-gray-400">Loading profile settings...</p>
       </div>
     );
   }
@@ -165,8 +165,8 @@ export default function AdminSettings() {
     <div className="flex flex-col gap-6 max-w-2xl">
       {/* Header */}
       <div>
-        <h2 className="text-sm font-semibold text-stone-800">Account Settings</h2>
-        <p className="text-xs text-stone-400">
+        <h2 className="text-sm font-semibold text-gray-800">Account Settings</h2>
+        <p className="text-xs text-gray-400">
           Manage your administrator profile details and keep your contact information up to date.
         </p>
       </div>
@@ -183,7 +183,7 @@ export default function AdminSettings() {
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-2 bg-green-50 border border-[#3d4f38]/20 text-[#3d4f38] text-xs px-4 py-3 rounded-xl font-medium">
+        <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-600 text-xs px-4 py-3 rounded-xl font-medium">
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <circle cx="12" cy="12" r="10" />
             <polyline points="22 4 12 14.01 9 11.01" />
@@ -196,9 +196,9 @@ export default function AdminSettings() {
       <form onSubmit={handleSave} className="flex flex-col gap-4">
         
         {/* Avatar & Photo Upload card */}
-        <div className="bg-white rounded-xl border border-stone-200 p-5">
-          <div className="flex items-center gap-3 border-b border-stone-100 pb-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-stone-50 flex items-center justify-center text-[#3d4f38] border border-stone-100">
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <div className="flex items-center gap-3 border-b border-gray-100 pb-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-indigo-600 border border-gray-100">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                 <circle cx="8.5" cy="8.5" r="1.5" />
@@ -206,15 +206,15 @@ export default function AdminSettings() {
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-stone-700">Profile Photo</h3>
-              <p className="text-[10px] text-stone-400">Upload a profile picture to personalize your account.</p>
+              <h3 className="text-sm font-semibold text-gray-700">Profile Photo</h3>
+              <p className="text-[10px] text-gray-400">Upload a profile picture to personalize your account.</p>
             </div>
           </div>
 
           <div className="flex items-center gap-5">
             {/* Avatar preview */}
             <div className="relative group">
-              <div className="w-20 h-20 rounded-full border-2 border-stone-200 overflow-hidden bg-[#f5f5f0] flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-2 border-gray-100 overflow-hidden bg-[#f9fafb] flex items-center justify-center">
                 {photoPreview ? (
                   <img
                     src={photoPreview}
@@ -222,7 +222,7 @@ export default function AdminSettings() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-[#3d4f38] text-xl font-bold">
+                  <span className="text-indigo-600 text-xl font-bold">
                     {getInitials(form.fullName)}
                   </span>
                 )}
@@ -251,7 +251,7 @@ export default function AdminSettings() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 text-xs font-semibold text-[#3d4f38] bg-stone-50 hover:bg-stone-100 border border-stone-200 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-semibold text-indigo-600 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
@@ -273,30 +273,30 @@ export default function AdminSettings() {
                   Remove
                 </button>
               )}
-              <p className="text-[10px] text-stone-400">JPG, PNG or GIF. Max 2MB.</p>
+              <p className="text-[10px] text-gray-400">JPG, PNG or GIF. Max 2MB.</p>
             </div>
           </div>
         </div>
 
         {/* Editable settings */}
-        <div className="bg-white rounded-xl border border-stone-200 p-5 flex flex-col gap-4">
-          <div className="flex items-center gap-3 border-b border-stone-100 pb-3">
-            <div className="w-8 h-8 rounded-lg bg-stone-50 flex items-center justify-center text-[#3d4f38] border border-stone-100">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-4">
+          <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-indigo-600 border border-gray-100">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-stone-700">Personal Information</h3>
-              <p className="text-[10px] text-stone-400">Update your public name and telephone contact.</p>
+              <h3 className="text-sm font-semibold text-gray-700">Personal Information</h3>
+              <p className="text-[10px] text-gray-400">Update your public name and telephone contact.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Full Name */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest">
+              <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
                 Full Name
               </label>
               <div className="relative">
@@ -307,14 +307,14 @@ export default function AdminSettings() {
                   onChange={handleChange}
                   required
                   placeholder="e.g. Aya Ahmed"
-                  className="w-full px-4 py-2.5 border border-stone-200 rounded-lg text-xs focus:outline-none focus:border-stone-400 bg-white text-stone-850"
+                  className="w-full px-4 py-2.5 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-800"
                 />
               </div>
             </div>
 
             {/* Phone Number */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest">
+              <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
                 Phone Number
               </label>
               <div className="relative">
@@ -325,7 +325,7 @@ export default function AdminSettings() {
                   onChange={handleChange}
                   required
                   placeholder="e.g. 01012345678"
-                  className="w-full px-4 py-2.5 border border-stone-200 rounded-lg text-xs focus:outline-none focus:border-stone-400 bg-white text-stone-850"
+                  className="w-full px-4 py-2.5 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-800"
                 />
               </div>
             </div>
@@ -333,24 +333,24 @@ export default function AdminSettings() {
         </div>
 
         {/* Read-only account credentials */}
-        <div className="bg-white rounded-xl border border-stone-200 p-5 flex flex-col gap-4">
-          <div className="flex items-center gap-3 border-b border-stone-100 pb-3">
-            <div className="w-8 h-8 rounded-lg bg-stone-50 flex items-center justify-center text-stone-500 border border-stone-100">
+        <div className="bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-4">
+          <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 border border-gray-100">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-stone-700">Account Security</h3>
-              <p className="text-[10px] text-stone-400">Security metadata cannot be modified directly.</p>
+              <h3 className="text-sm font-semibold text-gray-700">Account Security</h3>
+              <p className="text-[10px] text-gray-400">Security metadata cannot be modified directly.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Email (Read-only) */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest">
+              <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
                 Email Address
               </label>
               <div className="relative">
@@ -358,9 +358,9 @@ export default function AdminSettings() {
                   type="email"
                   value={form.email}
                   disabled
-                  className="w-full pl-4 pr-10 py-2.5 border border-stone-200 rounded-lg text-xs bg-stone-50 text-stone-500 cursor-not-allowed"
+                  className="w-full pl-4 pr-10 py-2.5 border border-gray-100 rounded-lg text-xs bg-gray-50 text-gray-500 cursor-not-allowed"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                   <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0110 0v4" />
@@ -371,7 +371,7 @@ export default function AdminSettings() {
 
             {/* Role (Read-only) */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-semibold text-stone-400 uppercase tracking-widest">
+              <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
                 User Role
               </label>
               <div className="relative">
@@ -379,9 +379,9 @@ export default function AdminSettings() {
                   type="text"
                   value={form.role.replace("_", " ")}
                   disabled
-                  className="w-full pl-4 pr-10 py-2.5 border border-stone-200 rounded-lg text-xs bg-stone-50 text-stone-500 cursor-not-allowed uppercase tracking-wider font-semibold"
+                  className="w-full pl-4 pr-10 py-2.5 border border-gray-100 rounded-lg text-xs bg-gray-50 text-gray-500 cursor-not-allowed uppercase tracking-wider font-semibold"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                   <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0110 0v4" />
@@ -397,7 +397,7 @@ export default function AdminSettings() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#3d4f38] hover:bg-[#2d3f28] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer"
+            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-all shadow-sm hover:shadow-md cursor-pointer"
           >
             {saving ? (
               <div

@@ -58,12 +58,13 @@ export default function AdminUsers() {
   };
 
   const totalPages = Math.ceil(total / 10);
+  console.log("filteredUsers", filteredUsers)
 
   return (
     <div className="flex flex-col gap-6">
       {/* Toast notifications */}
       {success && (
-        <div className="bg-green-50 border border-stone-200 text-[#3d4f38] text-xs px-4 py-3 rounded-xl font-medium">
+        <div className="bg-green-50 border border-gray-100 text-indigo-600 text-xs px-4 py-3 rounded-xl font-medium">
           {success}
         </div>
       )}
@@ -76,8 +77,8 @@ export default function AdminUsers() {
       {/* Header controls */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-sm font-semibold text-stone-800">User Management</h2>
-          <p className="text-xs text-stone-400">
+          <h2 className="text-sm font-semibold text-gray-800">User Management</h2>
+          <p className="text-xs text-gray-400">
             View all registered customers, vendors (brand owners), and bazaar hosts.
           </p>
         </div>
@@ -85,7 +86,7 @@ export default function AdminUsers() {
         <div className="flex items-center gap-3 w-full sm:w-auto">
           {/* Search box */}
           <div className="relative flex-1 sm:w-64">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -96,7 +97,7 @@ export default function AdminUsers() {
               placeholder="Search users name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-stone-200 rounded-lg text-xs focus:outline-none focus:border-stone-400 bg-white text-stone-700 placeholder-stone-400"
+              className="w-full pl-9 pr-4 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700 placeholder-gray-400"
             />
           </div>
 
@@ -105,7 +106,7 @@ export default function AdminUsers() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="appearance-none pl-3 pr-8 py-2 border border-stone-200 rounded-lg text-xs focus:outline-none focus:border-stone-400 bg-white text-stone-600 font-medium"
+              className="appearance-none pl-3 pr-8 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-600 font-medium"
             >
               <option value="">All Roles</option>
               <option value="CUSTOMER">Customer</option>
@@ -113,7 +114,7 @@ export default function AdminUsers() {
               <option value="BAZAAR_OWNER">Bazaar Owner</option>
               <option value="ADMIN">Administrator</option>
             </select>
-            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none">
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
               <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <polyline points="6 9 12 15 18 9" />
               </svg>
@@ -123,18 +124,18 @@ export default function AdminUsers() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white border border-stone-200 rounded-xl overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div
               className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
-              style={{ borderColor: "#3d4f38", borderTopColor: "transparent" }}
+              style={{ borderColor: "#4f46e5", borderTopColor: "transparent" }}
             />
-            <p className="text-xs text-stone-400">Loading user directory...</p>
+            <p className="text-xs text-gray-400">Loading user directory...</p>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="text-center py-20">
-            <span className="mx-auto text-stone-300 mb-3 block w-8 h-8">
+            <span className="mx-auto text-gray-300 mb-3 block w-8 h-8">
               <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
@@ -142,13 +143,13 @@ export default function AdminUsers() {
                 <path d="M16 3.13a4 4 0 010 7.75" />
               </svg>
             </span>
-            <p className="text-xs font-semibold text-stone-700">No Users Found</p>
-            <p className="text-[10px] text-stone-400 mt-1">Adjust search parameters or verify filters.</p>
+            <p className="text-xs font-semibold text-gray-700">No Users Found</p>
+            <p className="text-[10px] text-gray-400 mt-1">Adjust search parameters or verify filters.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-stone-50 border-b border-stone-100 text-[10px] text-stone-400 font-semibold uppercase tracking-widest">
+              <thead className="bg-gray-50 border-b border-gray-100 text-[10px] text-gray-400 font-semibold uppercase tracking-widest">
                 <tr>
                   <th className="px-6 py-3.5">User</th>
                   <th className="px-6 py-3.5">Contact info</th>
@@ -157,26 +158,26 @@ export default function AdminUsers() {
                   <th className="px-6 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100 text-xs">
+              <tbody className="divide-y divide-gray-100 text-xs">
                 {filteredUsers.map((u) => (
-                  <tr key={u._id} className="hover:bg-stone-50/40 transition-colors">
+                  <tr key={u._id} className="hover:bg-gray-50/40 transition-colors">
                     {/* User profile details */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-[#3d4f38] text-xs font-bold uppercase">
+                        <div className="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-indigo-600 text-xs font-bold uppercase">
                           {u.fullName ? u.fullName[0] : "?"}
                         </div>
                         <div>
-                          <p className="font-semibold text-stone-800">{u.fullName || "N/A"}</p>
-                          <p className="text-[10px] text-stone-400 font-mono">{u._id}</p>
+                          <p className="font-semibold text-gray-800">{u.profile?.firstName || u.profile?.fullName ||" admin"} {u.profile?.lastName}</p>
+                          <p className="text-[10px] text-gray-400 font-mono">{u._id}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Email and Phone */}
                     <td className="px-6 py-4">
-                      <p className="text-stone-700 flex items-center gap-1.5">
-                        <span className="text-stone-400">
+                      <p className="text-gray-700 flex items-center gap-1.5">
+                        <span className="text-gray-400">
                           <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
@@ -185,8 +186,8 @@ export default function AdminUsers() {
                         {u.email}
                       </p>
                       {u.phone && (
-                        <p className="text-[10px] text-stone-400 flex items-center gap-1.5 mt-1">
-                          <span className="text-stone-400">
+                        <p className="text-[10px] text-gray-400 flex items-center gap-1.5 mt-1">
+                          <span className="text-gray-400">
                             <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
                             </svg>
@@ -203,10 +204,10 @@ export default function AdminUsers() {
                           u.role === "ADMIN"
                             ? "bg-red-100 border-red-200 text-red-700"
                             : u.role === "BAZAAR_OWNER"
-                            ? "bg-[#f5f5f0] border-stone-200 text-stone-700"
+                            ? "bg-[#f9fafb] border-gray-100 text-gray-700"
                             : u.role === "BRAND_OWNER"
-                            ? "bg-stone-100 border-stone-200 text-[#3d4f38]"
-                            : "bg-stone-50 border-stone-200 text-stone-600"
+                            ? "bg-gray-100 border-gray-100 text-indigo-600"
+                            : "bg-gray-50 border-gray-100 text-gray-600"
                         }`}
                       >
                         {u.role.replace("_", " ")}
@@ -214,9 +215,9 @@ export default function AdminUsers() {
                     </td>
 
                     {/* Registration Date */}
-                    <td className="px-6 py-4 text-stone-600 text-[11px]">
+                    <td className="px-6 py-4 text-gray-600 text-[11px]">
                       <span className="flex items-center gap-1.5">
-                        <span className="text-stone-400">
+                        <span className="text-gray-400">
                           <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                             <line x1="16" y1="2" x2="16" y2="6" />
@@ -258,7 +259,7 @@ export default function AdminUsers() {
                           )}
                         </button>
                       ) : (
-                        <span className="text-[10px] text-stone-300 select-none">Protected</span>
+                        <span className="text-[10px] text-gray-300 select-none">Protected</span>
                       )}
                     </td>
                   </tr>
@@ -270,15 +271,15 @@ export default function AdminUsers() {
 
         {/* Pagination */}
         {!loading && totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-stone-100">
-            <p className="text-[10px] text-stone-400">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-gray-100">
+            <p className="text-[10px] text-gray-400">
               Page {page} of {totalPages} (Total {total} Users)
             </p>
             <div className="flex items-center gap-1.5">
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => p - 1)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 text-stone-500 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-100 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <polyline points="15 18 9 12 15 6" />
@@ -290,8 +291,8 @@ export default function AdminUsers() {
                   onClick={() => setPage(i + 1)}
                   className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-semibold transition-all ${
                     page === i + 1
-                      ? "bg-[#3d4f38] text-white"
-                      : "border border-stone-200 text-stone-500 hover:bg-stone-50"
+                      ? "bg-indigo-600 text-white"
+                      : "border border-gray-100 text-gray-500 hover:bg-gray-50"
                   }`}
                 >
                   {i + 1}
@@ -300,7 +301,7 @@ export default function AdminUsers() {
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 text-stone-500 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-100 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <polyline points="9 18 15 12 9 6" />

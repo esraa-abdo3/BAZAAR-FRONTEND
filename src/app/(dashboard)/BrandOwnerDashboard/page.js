@@ -17,7 +17,7 @@ export default function BrandOwnerDashboard() {
   const [activePage, setActivePage] = useState("overview");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editProduct, setEditProduct] = useState(null); // null = add, object = edit
-  const [brandInfo, setBrandInfo] = useState({ id: "", name: "", tagline: "" });
+  const [brandInfo, setBrandInfo] = useState({ id: "", name: "", tagline: "" ,bazaarId:"" });
 
   // بيانات الداشبورد بقت محفوظة هنا في الأب، مش جوه BrandOverview
   // عشان متتفقدش لما ننتقل بين الصفحات وترجع تاني
@@ -88,10 +88,13 @@ export default function BrandOwnerDashboard() {
       try {
         const res = await getBrandProfile();
         const data = res?.data ?? res ?? {};
+        console.log("data" , data)
         setBrandInfo({
           id: data._id ?? data.id ?? "",
           name: data.brandName ?? data.name ?? "",
           tagline: data.category ?? "Global Marketplace",
+          bazaarId:data.bazaarId
+     
         });
       } catch {
         // keep defaults if fetch fails
@@ -173,6 +176,7 @@ export default function BrandOwnerDashboard() {
         );
     }
   }
+  console.log("brandInfo",brandInfo)
 
   return (
     <div className="flex min-h-screen bg-gray-50 lg:ml-[220px]">
@@ -180,7 +184,10 @@ export default function BrandOwnerDashboard() {
         activePage={activePage}
         setActivePage={setActivePage}
         brandName={brandInfo.name}
+     
         brandTagline={brandInfo.tagline}
+        brandId={brandInfo.id}
+        bazaarId={brandInfo.bazaarId}
       />
       <div className="flex-1 flex flex-col min-w-0">
         <BrandHeader />

@@ -57,7 +57,10 @@ export async function getAdminOneBazaar(id) {
 }
 
 export async function updateAdminBazaar(id, data) {
-  const res = await adminAxios.patch(`/bazaars/${id}`, data);
+  const isFormData = data instanceof FormData;
+  const res = await adminAxios.patch(`/bazaars/${id}`, data, {
+    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+  });
   return res.data.data || res.data;
 }
 
@@ -73,7 +76,10 @@ export async function getAdminOneBrand(id) {
 }
 
 export async function updateAdminBrand(id, data) {
-  const res = await adminAxios.patch(`/brands/${id}`, data);
+  const isFormData = data instanceof FormData;
+  const res = await adminAxios.patch(`/brands/${id}`, data, {
+    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+  });
   return res.data.data || res.data;
 }
 
@@ -112,7 +118,10 @@ export async function getAdminOneProduct(id) {
 }
 
 export async function updateAdminProduct(id, data) {
-  const res = await adminAxios.patch(`/products/${id}`, data);
+  const isFormData = data instanceof FormData;
+  const res = await adminAxios.patch(`/products/${id}`, data, {
+    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+  });
   return res.data.data || res.data;
 }
 
