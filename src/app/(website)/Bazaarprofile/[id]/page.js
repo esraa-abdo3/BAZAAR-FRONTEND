@@ -695,28 +695,6 @@ export default function Bzaarprofile() {
                 {bazaardata?.bazaarName || "the bazaar"}
               </p>
 
-              <div className="flex items-center gap-6 sm:gap-10 mt-7">
-                {[
-                  { n: "01", label: "Scan" },
-                  { n: "02", label: "Browse brands" },
-                  { n: "03", label: "Enjoy offers" },
-                ].map((step) => (
-                  <div key={step.n} className="flex flex-col items-center">
-                    <span
-                      className="text-sm font-bold"
-                      style={{ color: "#D4A853", fontFamily: "Georgia, serif" }}
-                    >
-                      {step.n}
-                    </span>
-                    <span
-                      className="text-[10px] sm:text-xs uppercase tracking-widest mt-1"
-                      style={{ color: "#7d6a4f" }}
-                    >
-                      {step.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
 
               <div className="flex items-center gap-2.5 justify-center flex-wrap mt-8">
                 <a

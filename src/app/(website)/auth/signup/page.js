@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerCustomer } from "@/app/services/authService";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Signup() {
   const router = useRouter();
   const [form, setForm] = useState({ fullName: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({});
-
+const [showPassword, setShowPassword] = useState(false);
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -111,24 +112,35 @@ console.log(form)
             )}
           </div>
 
-          <div>
-            <label className="block text-xs font-medium uppercase tracking-widest text-stone-400 mb-2">
-              Password
-            </label>
-            <input
-              onChange={handleChange}
-              type="password"
-              value={form.password}
-              name="password"
-              placeholder="••••••••"
-              className={`w-full border-0 border-b ${
-                error.password ? "border-red-500" : "border-stone-300"
-              } p-2 rounded-sm bg-transparent text-sm focus:outline-none focus:border-stone-600`}
-            />
-            {error.password && (
-              <p className="text-red-500 text-xs mt-1">{error.password}</p>
-            )}
-          </div>
+<div>
+  <label className="block text-xs font-medium uppercase tracking-widest text-stone-400 mb-2">
+    Password
+  </label>
+  <div className="relative">
+    <input
+      onChange={handleChange}
+      type={showPassword ? "text" : "password"}
+      value={form.password}
+      name="password"
+      placeholder="••••••••"
+      className={`w-full border-0 border-b ${
+        error.password ? "border-red-500" : "border-stone-300"
+      } p-2 pr-8 rounded-sm bg-transparent text-sm focus:outline-none focus:border-stone-600`}
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword((prev) => !prev)}
+      className="absolute right-1 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+      tabIndex={-1}
+      aria-label={showPassword ? "Hide password" : "Show password"}
+    >
+      {showPassword ? <Eye size={16} />:  <EyeOff size={16} />}
+    </button>
+  </div>
+  {error.password && (
+    <p className="text-red-500 text-xs mt-1">{error.password}</p>
+  )}
+</div>
 
           {error.server && (
             <p className="text-red-500 text-xs">{error.server}</p>

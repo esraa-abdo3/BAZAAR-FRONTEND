@@ -10,6 +10,7 @@ import AdminUsers from "@/app/components/Dashboard/AdminDashboard/AdminUsers";
 import AdminProducts from "@/app/components/Dashboard/AdminDashboard/AdminProducts";
 import AdminOrders from "@/app/components/Dashboard/AdminDashboard/AdminOrders";
 import AdminSettings from "@/app/components/Dashboard/AdminDashboard/AdminSettings";
+import RoleGuard from "@/app/components/Auth/RoleGuard";
 
 const pageTitles = {
   overview: "Dashboard Overview",
@@ -46,16 +47,18 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 lg:ml-[220px]">
-      <AdminSidebar activePage={activePage} setActivePage={setActivePage} />
+    <RoleGuard allowedRoles="ADMIN">
+      <div className="flex min-h-screen bg-gray-50 lg:ml-[220px]">
+        <AdminSidebar activePage={activePage} setActivePage={setActivePage} />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader title={pageTitles[activePage] || "Admin Dashboard"} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <AdminHeader title={pageTitles[activePage] || "Admin Dashboard"} />
 
-        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          {renderPage()}
-        </main>
+          <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+            {renderPage()}
+          </main>
+        </div>
       </div>
-    </div>
+    </RoleGuard>
   );
 }

@@ -49,7 +49,7 @@ export default function ForgetPassword() {
   }
 
   return (
-    <section className="w-full mt-10 flex items-start md:items-center justify-center p-8">
+    <section className="w-full mt-10 flex items-start md:items-center justify-center p-8 mt-25">
       <div className="bg-white rounded-2xl border border-stone-200 p-10 w-full max-w-md">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-medium mb-1">Forgot Password?</h2>

@@ -13,7 +13,7 @@ function getHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-// الباك إند بيرجع الـ id في حقل اسمه orderId مش _id
+
 function getOrderId(order) {
   return order?.orderId ?? order?._id ?? "";
 }
@@ -27,7 +27,7 @@ const STATUS_STYLES = {
   cancelled: "text-red-600 bg-red-50",
 };
 
-const FILTERS = ["All Orders", "Pending", "Shipped", "Delivered"];
+const FILTERS = ["All Orders", "Pending", "Shipped", "Delivered ","Cancelled"];
 
 export default function BrandOrders({ onViewDetail }) {
   const [orders, setOrders] = useState([]);

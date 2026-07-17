@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { clearAuthCookie } from "@/app/services/authCookie";
 import {
   LayoutDashboard,
   Store,
@@ -54,7 +55,7 @@ export default function AdminSidebar({ activePage, setActivePage }) {
   }, []);
 
 const handleGoToWebsite = () => {
-  window.open(NEXT_PUBLIC_WEBSITE_URL, "_blank");
+  window.open("/", "_blank");
 }
 const handleLogout = async () => {
   try {
@@ -74,6 +75,7 @@ const handleLogout = async () => {
   } finally {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    clearAuthCookie();
     router.push("/auth/login");
   }
 };
