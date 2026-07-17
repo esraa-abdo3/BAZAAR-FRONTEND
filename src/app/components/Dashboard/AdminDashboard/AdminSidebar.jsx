@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { clearAuthCookie } from "@/app/services/authCookie";
 import {
   LayoutDashboard,
   Store,
@@ -74,6 +75,7 @@ const handleLogout = async () => {
   } finally {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    clearAuthCookie();
     router.push("/auth/login");
   }
 };

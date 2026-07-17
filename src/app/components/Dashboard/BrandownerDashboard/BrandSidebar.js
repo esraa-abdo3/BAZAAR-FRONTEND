@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { clearAuthCookie } from "@/app/services/authCookie";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -62,6 +63,7 @@ export default function BrandSidebar({
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      clearAuthCookie();
       router.push("/auth/login");
     }
   }

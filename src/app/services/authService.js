@@ -1,4 +1,5 @@
 import axios from "axios";
+import { setAuthCookie, clearAuthCookie } from "./authCookie";
 
 const BASE_URL = "https://bazary-backend.vercel.app/api/auth";
 
@@ -40,6 +41,8 @@ export async function login({ email, password, router }) {
     localStorage.setItem("user", JSON.stringify(user));
   }
 
+  setAuthCookie(role);
+
   if (role === "CUSTOMER") {
     router.push("/explore");
   } else if (role === "BRAND_OWNER") {
@@ -61,7 +64,9 @@ export async function logout() {
     { headers: { Authorization: `Bearer ${token}` } }
   );
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
   localStorage.removeItem("email");
+  clearAuthCookie();
   return res.data;
 }
 

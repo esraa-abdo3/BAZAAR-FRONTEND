@@ -12,6 +12,7 @@ import BrandAddProduct from "@/app/components/Dashboard/BrandownerDashboard/Bran
 import { getBrandProfile, getBrandDashboard, getBrandOrders } from "@/app/services/brandService";
 import BrandSettings from "@/app/components/Dashboard/BrandownerDashboard/BrandSettings";
 import BrandReviews from "@/app/components/Dashboard/BrandownerDashboard/BrandReviews";
+import RoleGuard from "@/app/components/Auth/RoleGuard";
 
 export default function BrandOwnerDashboard() {
   const [activePage, setActivePage] = useState("overview");
@@ -179,22 +180,24 @@ export default function BrandOwnerDashboard() {
   console.log("brandInfo",brandInfo)
 
   return (
-    <div className="flex min-h-screen bg-gray-50 lg:ml-[220px]">
-      <BrandSidebar
-        activePage={activePage}
-        setActivePage={setActivePage}
-        brandName={brandInfo.name}
-     
-        brandTagline={brandInfo.tagline}
-        brandId={brandInfo.id}
-        bazaarId={brandInfo.bazaarId}
-      />
-      <div className="flex-1 flex flex-col min-w-0">
-        <BrandHeader />
-        <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          {renderPage()}
-        </main>
+    <RoleGuard allowedRoles="BRAND_OWNER">
+      <div className="flex min-h-screen bg-gray-50 lg:ml-[220px]">
+        <BrandSidebar
+          activePage={activePage}
+          setActivePage={setActivePage}
+          brandName={brandInfo.name}
+
+          brandTagline={brandInfo.tagline}
+          brandId={brandInfo.id}
+          bazaarId={brandInfo.bazaarId}
+        />
+        <div className="flex-1 flex flex-col min-w-0">
+          <BrandHeader />
+          <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+            {renderPage()}
+          </main>
+        </div>
       </div>
-    </div>
+    </RoleGuard>
   );
 }
