@@ -161,6 +161,7 @@ export default function BazaaryAIChat({ isOpen, onClose }) {
 
       const json = await res.json();
       const data = json.data;
+      console.log(data)
 
       const assistantMsg = {
         id: Date.now() + 1,

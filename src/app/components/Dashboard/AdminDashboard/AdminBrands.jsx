@@ -121,7 +121,13 @@ export default function AdminBrands() {
         payload = fd;
       }
 
+      if (payload instanceof FormData) {
+  for (const [key, value] of payload.entries()) {
+    console.log(key, value);
+  }
+}
       const updated = await updateAdminBrand(editModal.brand._id, payload);
+    console.log("updated ", updated)
       setSuccess(`Brand ${editForm.brandName || editModal.brand.brandName} updated successfully!`);
       fetchBrandsList();
       if (detailBrand && detailBrand._id === editModal.brand._id) {

@@ -204,7 +204,10 @@ export default function Navbar() {
 </div>
 
                     
-            <button
+     
+
+            </div>
+                   <button
           onClick={openMenu}
               className="lg:hidden flex flex-col gap-1.5 p-1 ml-auto"
               aria-label="open menu"
@@ -213,8 +216,6 @@ export default function Navbar() {
               <span className="w-6 h-0.5 bg-background block" />
               <span className="w-6 h-0.5 bg-background block" />
             </button>
-
-            </div>
       
 
         </div>

@@ -253,12 +253,7 @@ export default function BrandAddProduct({ product, onBack, onSuccess }) {
                 isEdit ? "UPDATE PRODUCT" : "SAVE PRODUCT"
               )}
             </button>
-            <button
-              onClick={onBack}
-              className="w-full py-3 rounded-xl text-sm font-medium text-stone-600 border border-stone-200 hover:bg-stone-50 transition-colors"
-            >
-              DISCARD DRAFT
-            </button>
+     
           </div>
         </div>
 
