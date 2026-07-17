@@ -54,7 +54,7 @@ export default function AdminSidebar({ activePage, setActivePage }) {
   }, []);
 
 const handleGoToWebsite = () => {
-  window.open(NEXT_PUBLIC_WEBSITE_URL, "_blank");
+  window.open("/", "_blank");
 }
 const handleLogout = async () => {
   try {
