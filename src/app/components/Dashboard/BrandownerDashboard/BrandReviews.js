@@ -401,13 +401,7 @@ export default function BrandReviews({ brandId }) {
             </div>
             
             {/* Simulation trigger */}
-            <button
-              onClick={activeTab === "brand" ? openAddBrandModal : openAddProductModal}
-              disabled={activeTab === "product" && !selectedProductId}
-              className="text-[11px] font-semibold bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 shrink-0"
-            >
-              + Write Review (Demo)
-            </button>
+    
           </div>
 
           {/* List display */}
@@ -442,16 +436,7 @@ export default function BrandReviews({ brandId }) {
                       </p>
                     </div>
 
-                    <button
-                      onClick={() =>
-                        activeTab === "brand"
-                          ? openEditBrandModal(rev.rating)
-                          : openEditProductModal(rev.rating, rev.comment)
-                      }
-                      className="text-[10px] font-semibold border border-gray-200 text-gray-600 px-2 py-1 rounded hover:bg-gray-50 transition-colors shrink-0"
-                    >
-                      Edit (Demo)
-                    </button>
+          
                   </div>
 
                   {rev.comment && (
