@@ -14,6 +14,12 @@ adminAxios.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Never let a manual/default "application/json" Content-Type leak into a
+  // FormData request — the browser must set its own multipart boundary or
+  // the backend (multer) will fail to parse the fields, dropping them.
+  if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
   return config;
 });
 
@@ -38,7 +44,7 @@ export async function getAdminSetting() {
 export async function updateAdminSetting(data) {
   const isFormData = data instanceof FormData;
   const res = await adminAxios.patch("/setting", data, {
-    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+    headers: isFormData ? { "Content-Type": undefined } : {},
   });
   return res.data.data || res.data;
 }
@@ -59,7 +65,15 @@ export async function getAdminOneBazaar(id) {
 export async function updateAdminBazaar(id, data) {
   const isFormData = data instanceof FormData;
   const res = await adminAxios.patch(`/bazaars/${id}`, data, {
-    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+    headers: isFormData ? { "Content-Type": undefined } : {},
+  });
+  return res.data.data || res.data;
+}
+
+export async function createAdminBazaar(data) {
+  const isFormData = data instanceof FormData;
+  const res = await adminAxios.post("/bazaars", data, {
+    headers: isFormData ? { "Content-Type": undefined } : {},
   });
   return res.data.data || res.data;
 }
@@ -75,10 +89,15 @@ export async function getAdminOneBrand(id) {
   return res.data.data || res.data;
 }
 
+export async function createAdminBrand(data) {
+  const res = await adminAxios.post("/brands", data);
+  return res.data.data || res.data;
+}
+
 export async function updateAdminBrand(id, data) {
   const isFormData = data instanceof FormData;
   const res = await adminAxios.patch(`/brands/${id}`, data, {
-    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+    headers: isFormData ? { "Content-Type": undefined } : {},
   });
   return res.data.data || res.data;
 }
@@ -117,10 +136,18 @@ export async function getAdminOneProduct(id) {
   return res.data.data || res.data;
 }
 
+export async function createAdminProduct(brandId, data) {
+  const isFormData = data instanceof FormData;
+  const res = await adminAxios.post(`/brands/${brandId}/products`, data, {
+    headers: isFormData ? { "Content-Type": undefined } : {},
+  });
+  return res.data.data || res.data;
+}
+
 export async function updateAdminProduct(id, data) {
   const isFormData = data instanceof FormData;
   const res = await adminAxios.patch(`/products/${id}`, data, {
-    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+    headers: isFormData ? { "Content-Type": undefined } : {},
   });
   return res.data.data || res.data;
 }
