@@ -6,7 +6,18 @@ import {
   getAdminOneProduct,
   updateAdminProduct,
   deleteAdminProduct,
+  createAdminProduct,
+  getAdminBrands,
 } from "@/app/services/adminService";
+
+const EMPTY_ADD_PRODUCT_FORM = {
+  brandId: "",
+  name: "",
+  description: "",
+  price: "",
+  stock: "",
+  category: "",
+};
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -26,6 +37,15 @@ export default function AdminProducts() {
   const [editNewImages, setEditNewImages] = useState([]); // newly added File objects
   const [editNewPreviews, setEditNewPreviews] = useState([]); // preview URLs for new files
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Add Product modal state
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [addForm, setAddForm] = useState(EMPTY_ADD_PRODUCT_FORM);
+  const [addImages, setAddImages] = useState([]);
+  const [addPreviews, setAddPreviews] = useState([]);
+  const [adding, setAdding] = useState(false);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [loadingBrands, setLoadingBrands] = useState(false);
 
   const fetchProductsList = useCallback(async () => {
     try {
@@ -177,6 +197,95 @@ export default function AdminProducts() {
     }
   };
 
+  const openAddModal = async () => {
+    setAddForm(EMPTY_ADD_PRODUCT_FORM);
+    setAddImages([]);
+    setAddPreviews([]);
+    setAddModalOpen(true);
+    try {
+      setLoadingBrands(true);
+      const res = await getAdminBrands({ page: 1, limit: 100 });
+      setBrandOptions(res.brands || []);
+    } catch {
+      setBrandOptions([]);
+    } finally {
+      setLoadingBrands(false);
+    }
+  };
+
+  const closeAddModal = () => {
+    setAddModalOpen(false);
+    setAddForm(EMPTY_ADD_PRODUCT_FORM);
+    setAddImages([]);
+    setAddPreviews([]);
+  };
+
+  const handleAddFormChange = (e) => {
+    const { name, value } = e.target;
+    setAddForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddImagesChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setAddImages((prev) => [...prev, ...files]);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => setAddPreviews((prev) => [...prev, ev.target.result]);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeAddImage = (idx) => {
+    setAddImages((prev) => prev.filter((_, i) => i !== idx));
+    setAddPreviews((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    if (!addForm.brandId) return;
+    try {
+      setAdding(true);
+      setError(null);
+
+      let payload;
+      if (addImages.length > 0) {
+        const fd = new FormData();
+        fd.append("name", addForm.name);
+        fd.append("description", addForm.description);
+        fd.append("price", addForm.price);
+        fd.append("quantity", addForm.stock);
+        fd.append("category", addForm.category);
+        addImages.forEach((file) => fd.append("images", file));
+        payload = fd;
+        for (const [key, value] of fd.entries()) {
+          console.log("Add product (FormData):", key, value);
+        }
+      } else {
+        payload = {
+          name: addForm.name,
+          description: addForm.description,
+          price: Number(addForm.price),
+          quantity: Number(addForm.stock),
+          category: addForm.category,
+        };
+        console.log("Add product (JSON):", payload);
+      }
+
+      await createAdminProduct(addForm.brandId, payload);
+      setSuccess(`Product "${addForm.name}" created successfully!`);
+      closeAddModal();
+      setPage(1);
+      fetchProductsList();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      console.error("Create product failed:", err?.response?.data || err);
+      setError(err?.response?.data?.message || "Failed to create product.");
+    } finally {
+      setAdding(false);
+    }
+  };
+
   const totalPages = Math.ceil(total / 10);
 
   return (
@@ -202,20 +311,34 @@ export default function AdminProducts() {
           </p>
         </div>
 
-        <div className="relative w-full sm:w-64">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Search by product name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700 placeholder-gray-400"
+            />
+          </div>
+
+          {/* Add Product button */}
+          <button
+            onClick={openAddModal}
+            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-          </span>
-          <input
-            type="text"
-            placeholder="Search by product name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700 placeholder-gray-400"
-          />
+            Add Product
+          </button>
         </div>
       </div>
 
@@ -740,6 +863,140 @@ export default function AdminProducts() {
                     <div className="w-3 h-3 border border-t-transparent rounded-full animate-spin" style={{ borderColor: "#fff", borderTopColor: "transparent" }} />
                   )}
                   Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Product Modal */}
+      {addModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-gray-800">Add New Product</h3>
+                <p className="text-[10px] text-gray-400">
+                  Create a product listing under an existing brand.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeAddModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleAddSubmit} className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Brand</label>
+                <select
+                  name="brandId"
+                  required
+                  value={addForm.brandId}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                >
+                  <option value="">
+                    {loadingBrands ? "Loading brands..." : "Select a brand"}
+                  </option>
+                  {brandOptions.map((br) => (
+                    <option key={br._id} value={br._id}>
+                      {br.brandName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+       
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Product Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={addForm.name}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Price (EGP)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    name="price"
+                    required
+                    value={addForm.price}
+                    onChange={handleAddFormChange}
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Stock Quantity</label>
+                  <input
+                    type="number"
+                    min="0"
+                    name="stock"
+                    required
+                    value={addForm.stock}
+                    onChange={handleAddFormChange}
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Category</label>
+                <input
+                  type="text"
+                  name="category"
+                  required
+                  placeholder="Eg. clothing"
+                  value={addForm.category}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Description</label>
+                <textarea
+                  name="description"
+                  value={addForm.description}
+                  onChange={handleAddFormChange}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700 resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={closeAddModal}
+                  disabled={adding}
+                  className="px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={adding}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  {adding && (
+                    <div className="w-3 h-3 border border-t-transparent rounded-full animate-spin" style={{ borderColor: "#fff", borderTopColor: "transparent" }} />
+                  )}
+                  Create Product
                 </button>
               </div>
             </form>

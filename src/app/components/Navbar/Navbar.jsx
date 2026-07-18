@@ -18,9 +18,7 @@ export default function Navbar() {
     const [token, setToken] = useState(null);
     const [role, setRole] = useState(null);
 
-    // Re-check auth on mount and whenever the route changes (covers the
-    // redirect that happens right after login/logout) so the navbar always
-    // reflects the current auth state.
+
     useEffect(() => {
         setToken(localStorage.getItem("token"));
         try {
@@ -269,7 +267,11 @@ export default function Navbar() {
                      <Link href="/wishlist"
                       onClick={close}
                       className={linkClass("/wishlist")}
-                     >Wishlist ({wishlistCount})</Link>
+                >Wishlist ({wishlistCount})</Link>
+                <Link href="/cart"
+  onClick={close}
+  className={linkClass("/cart")}
+>Cart ({cartCount})</Link>
 
                     <Link href="/#contact"
                      onClick={(e) => {

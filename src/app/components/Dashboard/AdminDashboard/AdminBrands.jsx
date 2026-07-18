@@ -6,9 +6,25 @@ import {
   getAdminOneBrand,
   updateAdminBrand,
   deleteAdminBrand,
+  createAdminBrand,
+  getAdminBazaars,
 } from "@/app/services/adminService";
 
 const BRAND_TYPES = ["OFFLINE", "ONLINE", "HYBRID"];
+
+const EMPTY_ADD_BRAND_FORM = {
+  email: "",
+  firstName: "",
+  lastName: "",
+  phone: "",
+  whatsapp: "",
+  brandName: "",
+  brandCategory: "",
+  brandDescription: "",
+  location: "",
+  brandType: "",
+  bazaarId: "",
+};
 
 // Fallback shown when a brand's logoUrl is broken/404 (e.g. deleted or invalid image host path)
 const FALLBACK_LOGO =
@@ -31,6 +47,13 @@ export default function AdminBrands() {
   const [editLogoFile, setEditLogoFile] = useState(null);
   const [editLogoPreview, setEditLogoPreview] = useState(null);
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Add Brand modal state
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [addForm, setAddForm] = useState(EMPTY_ADD_BRAND_FORM);
+  const [adding, setAdding] = useState(false);
+  const [bazaarOptions, setBazaarOptions] = useState([]);
+  const [loadingBazaars, setLoadingBazaars] = useState(false);
 
   const fetchBrandsList = useCallback(async () => {
     try {
@@ -164,7 +187,48 @@ export default function AdminBrands() {
     }
   };
 
-  console.log("brands",brands)
+  const openAddModal = async () => {
+    setAddForm(EMPTY_ADD_BRAND_FORM);
+    setAddModalOpen(true);
+    try {
+      setLoadingBazaars(true);
+      const res = await getAdminBazaars({ page: 1, limit: 100 });
+      setBazaarOptions(res.bazaars || []);
+    } catch {
+      setBazaarOptions([]);
+    } finally {
+      setLoadingBazaars(false);
+    }
+  };
+
+  const closeAddModal = () => {
+    setAddModalOpen(false);
+    setAddForm(EMPTY_ADD_BRAND_FORM);
+  };
+
+  const handleAddFormChange = (e) => {
+    const { name, value } = e.target;
+    setAddForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setAdding(true);
+      setError(null);
+      await createAdminBrand(addForm);
+      setSuccess(`Brand "${addForm.brandName}" created successfully!`);
+      closeAddModal();
+      setPage(1);
+      fetchBrandsList();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch {
+      setError("Failed to create brand.");
+    } finally {
+      setAdding(false);
+    }
+  };
+
   const totalPages = Math.ceil(total / 10);
 
   return (
@@ -190,20 +254,34 @@ export default function AdminBrands() {
           </p>
         </div>
 
-        <div className="relative w-full sm:w-64">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Search by brand or owner..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700 placeholder-gray-400"
+            />
+          </div>
+
+          {/* Add Brand button */}
+          <button
+            onClick={openAddModal}
+            className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-          </span>
-          <input
-            type="text"
-            placeholder="Search by brand or owner..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700 placeholder-gray-400"
-          />
+            Add Brand
+          </button>
         </div>
       </div>
 
@@ -765,6 +843,200 @@ export default function AdminBrands() {
                     <div className="w-3 h-3 border border-t-transparent rounded-full animate-spin" style={{ borderColor: "#fff", borderTopColor: "transparent" }} />
                   )}
                   Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Brand Modal overlay */}
+      {addModalOpen && (
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-gray-800 text-sm">Add New Brand</h3>
+                <p className="text-[10px] text-gray-400 mt-0.5">
+                  Register a brand and its owner account under an existing bazaar.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeAddModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleAddSubmit} className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Bazaar</label>
+                <select
+                  name="bazaarId"
+                  required
+                  value={addForm.bazaarId}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                >
+                  <option value="">
+                    {loadingBazaars ? "Loading bazaars..." : "Select a bazaar"}
+                  </option>
+                  {bazaarOptions.map((bz) => (
+                    <option key={bz._id} value={bz._id}>
+                      {bz.bazaarName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">First Name</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    required
+                    value={addForm.firstName}
+                    onChange={handleAddFormChange}
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Last Name</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    required
+                    value={addForm.lastName}
+                    onChange={handleAddFormChange}
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Phone</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    required
+                    value={addForm.phone}
+                    onChange={handleAddFormChange}
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">WhatsApp</label>
+                  <input
+                    type="text"
+                    name="whatsapp"
+                    required
+                    value={addForm.whatsapp}
+                    onChange={handleAddFormChange}
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={addForm.email}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Brand Name</label>
+                <input
+                  type="text"
+                  name="brandName"
+                  required
+                  value={addForm.brandName}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Brand Category</label>
+                  <input
+                    type="text"
+                    name="brandCategory"
+                    required
+                    value={addForm.brandCategory}
+                    onChange={handleAddFormChange}
+                    placeholder="Eg. ملابس، عطور"
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Brand Type</label>
+                  <select
+                    name="brandType"
+                    required
+                    value={addForm.brandType}
+                    onChange={handleAddFormChange}
+                    className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                  >
+                    <option value="">Select type</option>
+                    {BRAND_TYPES.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Location</label>
+                <input
+                  type="text"
+                  name="location"
+              
+                  value={addForm.location}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Brand Description</label>
+                <textarea
+                  name="brandDescription"
+                  rows={3}
+                  required
+                  value={addForm.brandDescription}
+                  onChange={handleAddFormChange}
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg text-xs focus:outline-none focus:border-indigo-400 bg-white text-gray-700 resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={closeAddModal}
+                  disabled={adding}
+                  className="px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={adding}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  {adding && (
+                    <div className="w-3 h-3 border border-t-transparent rounded-full animate-spin" style={{ borderColor: "#fff", borderTopColor: "transparent" }} />
+                  )}
+                  Create Brand
                 </button>
               </div>
             </form>
