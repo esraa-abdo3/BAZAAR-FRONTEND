@@ -23,9 +23,9 @@ const STEPS = [
 ];
 
 const PACKAGES = [
-  { id: "STARTER", name: "Starter", type: "ONLINE", maxBrandCapacity: 20, topSearch: false, aiAssistant: false, price:1000 },
-  { id: "BUSINESS", name: "Business", type: "HYBRID", maxBrandCapacity: 50, topSearch: false, aiAssistant: true, price: 1500 },
-  { id: "PREMIUM", name: "Premium", type: "HYBRID", maxBrandCapacity: 100, topSearch: true, aiAssistant: true, price:2000 },
+  { id: "STARTER", name: "Starter", type: "ONLINE", maxBrandCapacity: 20,  aiAssistant: false, price:1000 },
+  { id: "BUSINESS", name: "Business", type: "HYBRID", maxBrandCapacity: 50, aiAssistant: true, price: 1500 },
+  { id: "PREMIUM", name: "Premium", type: "HYBRID", maxBrandCapacity: 100,  aiAssistant: true, price:2000 },
 ];
 
 // Small inline spinner used INSIDE buttons only — never covers page content.
@@ -782,10 +782,7 @@ export default function Bazaradd() {
                                 <ul className="text-[11px] text-gray-600 space-y-1.5">
                                   <li className="flex items-center gap-1.5"><span className="text-[#50604a]">✓</span>{pkg.type} bazaar type</li>
                                   <li className="flex items-center gap-1.5"><span className="text-[#50604a]">✓</span>Up to {pkg.maxBrandCapacity} brands</li>
-                                  <li className="flex items-center gap-1.5">
-                                    <span className={pkg.topSearch ? "text-[#50604a]" : "text-gray-300"}>{pkg.topSearch ? "✓" : "✕"}</span>
-                                    Top search placement
-                                  </li>
+                        
                                   <li className="flex items-center gap-1.5">
                                     <span className={pkg.aiAssistant ? "text-[#50604a]" : "text-gray-300"}>{pkg.aiAssistant ? "✓" : "✕"}</span>
                                     AI assistant
